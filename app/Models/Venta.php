@@ -13,11 +13,15 @@ class Venta extends Model
     protected $fillable = [
         'user_id',
         'fechaven',
+        'subtotalven',
+        'ivaven',
         'totalven'
     ];
 
     protected $casts = [
         'fechaven' => 'date',
+        'subtotalven' => 'decimal:2',
+        'ivaven' => 'decimal:2',
         'totalven' => 'decimal:2'
     ];
 
@@ -29,5 +33,11 @@ class Venta extends Model
     public function detalles()
     {
         return $this->hasMany(DetalleVenta::class, 'idven', 'idven');
+    }
+
+    // Calcular el valor del IVA
+    public function getIvaValorAttribute()
+    {
+        return $this->subtotalven * ($this->ivaven / 100);
     }
 }

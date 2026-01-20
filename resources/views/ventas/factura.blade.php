@@ -74,19 +74,23 @@
         }
         .totales {
             margin-top: 20px;
-            text-align: right;
+            width: 300px;
+            margin-left: auto;
         }
-        .total-row {
-            font-size: 14px;
-            margin: 5px 0;
+        .totales table {
+            width: 100%;
         }
-        .total-final {
-            font-size: 20px;
+        .totales td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .totales .total-final td {
+            font-size: 16px;
             font-weight: bold;
             color: #27ae60;
             border-top: 2px solid #333;
-            padding-top: 10px;
-            margin-top: 10px;
+            border-bottom: none;
+            padding-top: 12px;
         }
         .footer {
             margin-top: 40px;
@@ -152,19 +156,25 @@
 
         <div class="totales">
             @php
-                $subtotal = $venta->totalven;
-                $iva = $subtotal * 0.12;
-                $total = $subtotal;
+                $subtotal = $venta->subtotalven ?? $venta->detalles->sum('subtotaldven');
+                $ivaPorcentaje = $venta->ivaven ?? 12;
+                $ivaValor = $subtotal * ($ivaPorcentaje / 100);
+                $total = $venta->totalven;
             @endphp
-            <div class="total-row">
-                <strong>Subtotal:</strong> ${{ number_format($subtotal, 2) }}
-            </div>
-            <div class="total-row">
-                <strong>IVA (12%):</strong> ${{ number_format($iva, 2) }}
-            </div>
-            <div class="total-final">
-                TOTAL A PAGAR: ${{ number_format($total, 2) }}
-            </div>
+            <table>
+                <tr>
+                    <td>Subtotal:</td>
+                    <td class="text-right">${{ number_format($subtotal, 2) }}</td>
+                </tr>
+                <tr>
+                    <td>IVA ({{ number_format($ivaPorcentaje, 2) }}%):</td>
+                    <td class="text-right">${{ number_format($ivaValor, 2) }}</td>
+                </tr>
+                <tr class="total-final">
+                    <td>TOTAL A PAGAR:</td>
+                    <td class="text-right">${{ number_format($total, 2) }}</td>
+                </tr>
+            </table>
         </div>
 
         <div class="footer">
