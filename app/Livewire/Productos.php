@@ -18,6 +18,10 @@ class Productos extends Component
     public $idcat;
     public $precioventapro;
     public $stockpro;
+    public $preciocomprapro;
+    public $preciominpro;
+    public $preciomaxpro;
+    public $stockminpro;
     // (Puedes añadir más campos como preciocompra, stockmin, etc. aquí)
 
     // Reglas de validación
@@ -27,6 +31,10 @@ class Productos extends Component
         'idcat' => 'required',
         'precioventapro' => 'required|numeric',
         'stockpro' => 'required|integer',
+        'preciocomprapro' => 'required|numeric',
+        'preciominpro' => 'required|numeric',
+        'preciomaxpro' => 'required|numeric',
+        'stockminpro' => 'required|integer',
     ];
 
     public function render()
@@ -48,13 +56,17 @@ class Productos extends Component
     public function editar($id)
     {
         $producto = Producto::find($id);
-        
+
         $this->id_producto_editar = $producto->idpro;
         $this->codbarraspro = $producto->codbarraspro;
         $this->nombrepro = $producto->nombrepro;
         $this->idcat = $producto->idcat;
         $this->precioventapro = $producto->precioventapro;
         $this->stockpro = $producto->stockpro;
+        $this->preciocomprapro = $producto->preciocomprapro;
+        $this->preciominpro = $producto->preciominpro;
+        $this->preciomaxpro = $producto->preciomaxpro;
+        $this->stockminpro = $producto->stockminpro;
 
         $this->modal = true;
     }
@@ -73,11 +85,11 @@ class Productos extends Component
                 'precioventapro' => $this->precioventapro,
                 'stockpro' => $this->stockpro,
                 // Valores por defecto para lo que no pedimos en el form:
-                'preciominpro' => 0, 
-                'preciomaxpro' => 0,
+                'preciominpro' => $this->preciominpro,
+                'preciomaxpro' => $this->preciomaxpro,
                 'estadocatpro' => true,
-                'preciocomprapro' => 0,
-                'stockminpro' => 5
+                'preciocomprapro' => $this->preciocomprapro,
+                'stockminpro' => $this->stockminpro
             ]
         );
 
@@ -100,6 +112,11 @@ class Productos extends Component
         $this->idcat = '';
         $this->precioventapro = '';
         $this->stockpro = '';
+        $this->preciocomprapro = '';
+        $this->preciominpro = '';
+        $this->preciomaxpro = '';
+        $this->stockminpro = '';
+
         $this->modal = false;
     }
 }
