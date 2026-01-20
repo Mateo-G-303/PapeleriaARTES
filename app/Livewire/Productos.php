@@ -5,6 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Categoria;
+use Illuminate\Support\Facades\DB; // <-- No olvides importar esto arriba
+use Symfony\Component\HttpFoundation\StreamedResponse; // <-- Y esto también
 
 class Productos extends Component
 {
@@ -118,5 +120,52 @@ class Productos extends Component
         $this->stockminpro = '';
 
         $this->modal = false;
+    }
+
+    public function exportarCSV()
+    {
+        // 1. Llamamos al procedimiento almacenado NUEVO
+        $productos = DB::select('SELECT * FROM sp_exportar_todo_inventario()');
+
+        $fileName = 'inventario_completo_' . date('Y-m-d_H-i') . '.csv';
+
+        return response()->streamDownload(function () use ($productos) {
+            $handle = fopen('php://output', 'w');
+
+            // BOM para tildes en Excel
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // 2. Encabezados COMPLETOS
+            fputcsv($handle, [
+                'ID',
+                'CÓDIGO BARRAS',
+                'PRODUCTO',
+                'CATEGORÍA',
+                'COSTO COMPRA',
+                'PRECIO VENTA',
+                'PRECIO MÍNIMO',
+                'PRECIO MÁXIMO',
+                'STOCK ACTUAL',
+                'STOCK ALERTA'
+            ], ';');
+
+            // 3. Escribir TODOS los datos
+            foreach ($productos as $row) {
+                fputcsv($handle, [
+                    $row->id_producto,
+                    $row->codigo,
+                    $row->nombre,
+                    $row->categoria,
+                    $row->costo_compra,
+                    $row->precio_venta,
+                    $row->precio_min,
+                    $row->precio_max,
+                    $row->stock_actual,
+                    $row->alerta_stock
+                ], ';');
+            }
+
+            fclose($handle);
+        }, $fileName);
     }
 }

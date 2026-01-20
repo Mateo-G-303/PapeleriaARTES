@@ -125,6 +125,10 @@
                 <flux:button wire:click="crear" variant="primary" icon="plus">
                     Nuevo Producto
                 </flux:button>
+                <flux:button wire:click="exportarCSV" class="bg-green-600 hover:bg-green-700 text-white border-none" icon="arrow-down-tray">
+                    <span wire:loading.remove wire:target="exportarCSV">Exportar Excel</span>
+                    <span wire:loading wire:target="exportarCSV">Generando...</span>
+                </flux:button>
             </div>
 
             <div class="overflow-x-auto border rounded-lg">
