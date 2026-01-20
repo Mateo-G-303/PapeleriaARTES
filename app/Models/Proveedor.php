@@ -16,4 +16,8 @@ class Proveedor extends Model
         'correoprov',
         'telefonoprov'
     ];
+    public function compras()
+    {
+    return $this->hasMany(Compra::class, 'idprov', 'idprov');
+    }
 }

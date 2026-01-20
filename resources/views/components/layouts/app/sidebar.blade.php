@@ -41,10 +41,9 @@
         @endif
 
         <!-- Proveedores -->
-        <flux:navlist.item icon="truck" href="{{ route('proveedores.index') }}" :current="request()->routeIs('proveedores.*')">
+        <flux:navlist.item icon="truck" href="{{ route('proveedores') }}" :current="request()->routeIs('proveedores')">
             Proveedores
         </flux:navlist.item>
-        <flux:spacer />
 
         <!-- Reportes - Solo Admin y Propietario -->
         @if(in_array($rolUsuario, ['Administrador', 'Propietario']))
@@ -55,7 +54,8 @@
 
         <!-- Compras/Proveedores - Solo Admin y Propietario -->
         @if(in_array($rolUsuario, ['Administrador', 'Propietario']))
-        <flux:navlist.item icon="truck" href="#" :current="false">
+        <flux:navlist.item
+        icon="truck" href="{{ route('compras') }}" :current="request()->routeIs('compras')">
             Compras
         </flux:navlist.item>
         @endif
