@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\RolController;
 use App\Http\Controllers\Admin\ConfiguracionController;
 use App\Http\Controllers\VentaController;
 use App\Livewire\Compras;
+use App\Livewire\AuditoriaIndex; // <-- No olvides importar esto arriba
 
 // Página de inicio
 Route::get('/', function () {
@@ -61,6 +62,8 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
+        
+    Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
 });
 
 // Rutas protegidas para usuarios normales (con timeout de sesión)

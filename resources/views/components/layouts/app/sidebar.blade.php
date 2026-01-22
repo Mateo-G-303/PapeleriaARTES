@@ -55,7 +55,7 @@
         <!-- Compras/Proveedores - Solo Admin y Propietario -->
         @if(in_array($rolUsuario, ['Administrador', 'Propietario']))
         <flux:navlist.item
-        icon="truck" href="{{ route('compras') }}" :current="request()->routeIs('compras')">
+            icon="truck" href="{{ route('compras') }}" :current="request()->routeIs('compras')">
             Compras
         </flux:navlist.item>
         @endif
@@ -65,7 +65,9 @@
         <flux:navlist.item icon="shield-check" href="{{ route('admin.dashboard') }}" :current="request()->routeIs('admin.*')">
             Administración
         </flux:navlist.item>
+        <flux:navlist.item icon="clipboard-document-list" href="{{ route('auditoria') }}">Auditoría</flux:navlist.item>
         @endif
+
 
         <flux:spacer />
 

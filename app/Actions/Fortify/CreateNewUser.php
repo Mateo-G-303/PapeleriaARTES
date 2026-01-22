@@ -36,11 +36,7 @@ class CreateNewUser implements CreatesNewUsers
             'cedula' => $input['cedula'], // <--- Agregado
             'email' => $input['email'],
             'password' => $input['password'],
-<<<<<<< HEAD
-            'idrol' => 1, // Asignamos rol de Admin por defecto
-=======
             'idrol' => 1, // Asignamos rol de Administrador por defecto
->>>>>>> feature-idioma-es
         ]);
     }
 }
