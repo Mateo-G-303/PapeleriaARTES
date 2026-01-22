@@ -4,9 +4,11 @@
 
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Inventario</h2>
+                @if(Auth::user()->tienePermiso('productos.crear'))
                 <flux:button wire:click="crear" variant="primary" icon="plus">
                     Nuevo Producto
                 </flux:button>
+                @endif
             </div>
 
             <div class="overflow-x-auto border rounded-lg">
@@ -34,8 +36,12 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-sm font-medium flex gap-2">
+                                @if(Auth::user()->tienePermiso('productos.editar'))
                                 <flux:button size="sm" wire:click="editar({{ $producto->idpro }})">Editar</flux:button>
+                                @endif
+                                @if(Auth::user()->tienePermiso('productos.eliminar'))
                                 <flux:button size="sm" variant="danger" wire:click="borrar({{ $producto->idpro }})" wire:confirm="¿Seguro que deseas eliminar?">Borrar</flux:button>
+                                @endif
                             </td>
                         </tr>
                         @empty
