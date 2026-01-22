@@ -5,16 +5,14 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Categoria;
-use Illuminate\Support\Facades\DB; // <-- No olvides importar esto arriba
-use Symfony\Component\HttpFoundation\StreamedResponse; // <-- Y esto también
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Productos extends Component
 {
-    // Variables para el Formulario
-    public $id_producto_editar; // Para saber si estamos editando
-    public $modal = false;      // Controla si la ventana está abierta
+    public $id_producto_editar;
+    public $modal = false;
 
-    // Campos de la base de datos
     public $codbarraspro;
     public $nombrepro;
     public $idcat;
@@ -24,9 +22,7 @@ class Productos extends Component
     public $preciominpro;
     public $preciomaxpro;
     public $stockminpro;
-    // (Puedes añadir más campos como preciocompra, stockmin, etc. aquí)
 
-    // Reglas de validación
     protected $rules = [
         'codbarraspro' => 'required|max:13',
         'nombrepro' => 'required|min:3',
@@ -42,21 +38,25 @@ class Productos extends Component
     public function render()
     {
         $productos = Producto::all();
-        $categorias = Categoria::all(); // Necesario para el <select> del formulario
+        $categorias = Categoria::all();
 
         return view('livewire.productos', compact('productos', 'categorias'));
     }
 
-    // Abrir Modal para CREAR
     public function crear()
     {
+        if (!auth()->user()->tienePermiso('productos.crear')) {
+            abort(403);
+        }
         $this->limpiarCampos();
         $this->modal = true;
     }
 
-    // Abrir Modal para EDITAR
     public function editar($id)
     {
+        if (!auth()->user()->tienePermiso('productos.editar')) {
+            abort(403);
+        }
         $producto = Producto::find($id);
 
         $this->id_producto_editar = $producto->idpro;
@@ -73,20 +73,23 @@ class Productos extends Component
         $this->modal = true;
     }
 
-    // Guardar o Actualizar
     public function guardar()
     {
+        $permiso = $this->id_producto_editar ? 'productos.editar' : 'productos.crear';
+        if (!auth()->user()->tienePermiso($permiso)) {
+            abort(403);
+        }
+        
         $this->validate();
 
         Producto::updateOrCreate(
-            ['idpro' => $this->id_producto_editar], // Si existe este ID, actualiza
+            ['idpro' => $this->id_producto_editar],
             [
                 'codbarraspro' => $this->codbarraspro,
                 'nombrepro' => $this->nombrepro,
                 'idcat' => $this->idcat,
                 'precioventapro' => $this->precioventapro,
                 'stockpro' => $this->stockpro,
-                // Valores por defecto para lo que no pedimos en el form:
                 'preciominpro' => $this->preciominpro,
                 'preciomaxpro' => $this->preciomaxpro,
                 'estadocatpro' => true,
@@ -99,13 +102,14 @@ class Productos extends Component
         $this->limpiarCampos();
     }
 
-    // Borrar Producto
     public function borrar($id)
     {
+        if (!auth()->user()->tienePermiso('productos.eliminar')) {
+            abort(403);
+        }
         Producto::find($id)->delete();
     }
 
-    // Cerrar Modal y limpiar
     public function limpiarCampos()
     {
         $this->id_producto_editar = null;
@@ -124,7 +128,6 @@ class Productos extends Component
 
     public function exportarCSV()
     {
-        // 1. Llamamos al procedimiento almacenado NUEVO
         $productos = DB::select('SELECT * FROM sp_exportar_todo_inventario()');
 
         $fileName = 'inventario_completo_' . date('Y-m-d_H-i') . '.csv';
@@ -132,10 +135,8 @@ class Productos extends Component
         return response()->streamDownload(function () use ($productos) {
             $handle = fopen('php://output', 'w');
 
-            // BOM para tildes en Excel
             fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-            // 2. Encabezados COMPLETOS
             fputcsv($handle, [
                 'ID',
                 'CÓDIGO BARRAS',
@@ -149,7 +150,6 @@ class Productos extends Component
                 'STOCK ALERTA'
             ], ';');
 
-            // 3. Escribir TODOS los datos
             foreach ($productos as $row) {
                 fputcsv($handle, [
                     $row->id_producto,

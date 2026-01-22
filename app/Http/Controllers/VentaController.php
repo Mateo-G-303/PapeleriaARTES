@@ -14,6 +14,10 @@ class VentaController extends Controller
 {
     public function index()
     {
+        if (!auth()->user()->tienePermiso('ventas.ver')) {
+            abort(403);
+        }
+        
         $ventas = Venta::with(['usuario', 'detalles.producto'])
             ->orderBy('idven', 'desc')
             ->get();
@@ -22,6 +26,10 @@ class VentaController extends Controller
 
     public function create()
     {
+        if (!auth()->user()->tienePermiso('ventas.crear')) {
+            abort(403);
+        }
+        
         return view('ventas.create');
     }
 
@@ -65,6 +73,10 @@ class VentaController extends Controller
 
     public function store(Request $request)
     {
+        if (!auth()->user()->tienePermiso('ventas.crear')) {
+            abort(403);
+        }
+        
         $request->validate([
             'productos' => 'required|array|min:1',
             'productos.*.idpro' => 'required|exists:productos,idpro',
@@ -75,29 +87,24 @@ class VentaController extends Controller
         DB::beginTransaction();
 
         try {
-            // Calcular total
             $total = 0;
             foreach ($request->productos as $item) {
                 $total += $item['cantidad'] * $item['precio'];
             }
 
-            // Crear venta
             $venta = Venta::create([
                 'user_id' => Auth::id(),
                 'fechaven' => now(),
                 'totalven' => $total
             ]);
 
-            // Crear detalles y actualizar stock
             foreach ($request->productos as $item) {
                 $producto = Producto::find($item['idpro']);
 
-                // Verificar stock disponible
                 if (!$producto->tieneStockDisponible($item['cantidad'])) {
                     throw new \Exception("Stock insuficiente para: {$producto->nombrepro}. Disponible: {$producto->stockDisponibleParaVenta()}");
                 }
 
-                // Crear detalle
                 DetalleVenta::create([
                     'idven' => $venta->idven,
                     'idpro' => $item['idpro'],
@@ -106,7 +113,6 @@ class VentaController extends Controller
                     'subtotaldven' => $item['cantidad'] * $item['precio']
                 ]);
 
-                // Reducir stock
                 $producto->decrement('stockpro', $item['cantidad']);
             }
 
@@ -129,12 +135,20 @@ class VentaController extends Controller
 
     public function show($id)
     {
+        if (!auth()->user()->tienePermiso('ventas.ver')) {
+            abort(403);
+        }
+        
         $venta = Venta::with(['usuario', 'detalles.producto'])->findOrFail($id);
         return view('ventas.show', compact('venta'));
     }
 
     public function generarFactura($id)
     {
+        if (!auth()->user()->tienePermiso('ventas.facturar')) {
+            abort(403);
+        }
+        
         $venta = Venta::with(['usuario', 'detalles.producto'])->findOrFail($id);
         
         $pdf = Pdf::loadView('ventas.factura', compact('venta'));
@@ -144,6 +158,10 @@ class VentaController extends Controller
 
     public function verFactura($id)
     {
+        if (!auth()->user()->tienePermiso('ventas.facturar')) {
+            abort(403);
+        }
+        
         $venta = Venta::with(['usuario', 'detalles.producto'])->findOrFail($id);
         
         $pdf = Pdf::loadView('ventas.factura', compact('venta'));
