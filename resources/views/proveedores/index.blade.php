@@ -21,9 +21,11 @@
     <div class="card shadow">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Lista de Proveedores</h5>
+            @if(Auth::user()->tienePermiso('proveedores.crear'))
             <a href="{{ route('proveedores.create') }}" class="btn btn-light btn-sm">
                 ➕ Nuevo Proveedor
             </a>
+            @endif
         </div>
 
         <div class="card-body">
@@ -47,11 +49,14 @@
                         <td>{{ $p->telefonoprov }}</td>
                         <td class="d-flex justify-content-center gap-2">
 
+                            @if(Auth::user()->tienePermiso('proveedores.editar'))
                             <a href="{{ route('proveedores.edit', $p->idprov) }}" 
                                class="btn btn-warning btn-sm">
                                 ✏️ Editar
                             </a>
+                            @endif
 
+                            @if(Auth::user()->tienePermiso('proveedores.eliminar'))
                             <form action="{{ route('proveedores.destroy', $p->idprov) }}" 
                                   method="POST"
                                   onsubmit="return confirm('¿Está seguro de eliminar este proveedor?')">
@@ -61,6 +66,7 @@
                                     🗑️ Eliminar
                                 </button>
                             </form>
+                            @endif
 
                         </td>
                     </tr>

@@ -61,7 +61,6 @@
                         </span>
                     </button>
 
-
                 </div>
 
             </div>
@@ -75,9 +74,11 @@
                     <h2 class="text-2xl font-bold text-gray-800">Categorías</h2>
                     <p class="text-sm text-gray-500">Organización de tu inventario.</p>
                 </div>
+                @if(Auth::user()->tienePermiso('categorias.crear'))
                 <flux:button wire:click="crear" variant="primary" icon="plus">
                     Nueva Categoría
                 </flux:button>
+                @endif
             </div>
 
             <div class="overflow-x-auto border rounded-lg">
@@ -105,8 +106,12 @@
 
                             <td class="px-6 py-4 text-sm font-medium text-right">
                                 <div class="flex justify-end gap-2">
+                                    @if(Auth::user()->tienePermiso('categorias.editar'))
                                     <flux:button size="sm" wire:click="editar({{ $cat->idcat }})">Editar</flux:button>
+                                    @endif
+                                    @if(Auth::user()->tienePermiso('categorias.eliminar'))
                                     <flux:button size="sm" variant="danger" wire:click="borrar({{ $cat->idcat }})" wire:confirm="¿Seguro que deseas eliminar esta categoría?">Borrar</flux:button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

@@ -108,7 +108,6 @@
                         </span>
                     </button>
 
-
                 </div>
 
             </div>
@@ -122,14 +121,17 @@
                     <h2 class="text-2xl font-bold text-gray-800">Inventario</h2>
                     <p class="text-sm text-gray-500">Gestión de productos y existencias.</p>
                 </div>
-                <flux:button wire:click="exportarCSV" class="bg-green-600 hover:bg-green-700 text-white border-none" icon="arrow-down-tray">
-                    <span wire:loading.remove wire:target="exportarCSV">Exportar Excel</span>
-                    <span wire:loading wire:target="exportarCSV">Generando...</span>
-                </flux:button>
-                <flux:button wire:click="crear" variant="primary" icon="plus">
-                    Nuevo Producto
-                </flux:button>
-
+                <div class="flex gap-2">
+                    <flux:button wire:click="exportarCSV" class="bg-green-600 hover:bg-green-700 text-white border-none" icon="arrow-down-tray">
+                        <span wire:loading.remove wire:target="exportarCSV">Exportar Excel</span>
+                        <span wire:loading wire:target="exportarCSV">Generando...</span>
+                    </flux:button>
+                    @if(Auth::user()->tienePermiso('productos.crear'))
+                    <flux:button wire:click="crear" variant="primary" icon="plus">
+                        Nuevo Producto
+                    </flux:button>
+                    @endif
+                </div>
             </div>
 
             <div class="overflow-x-auto border rounded-lg">
@@ -178,8 +180,12 @@
                             </td>
 
                             <td class="px-4 py-4 text-sm font-medium flex gap-2">
+                                @if(Auth::user()->tienePermiso('productos.editar'))
                                 <flux:button size="sm" wire:click="editar({{ $producto->idpro }})">Editar</flux:button>
+                                @endif
+                                @if(Auth::user()->tienePermiso('productos.eliminar'))
                                 <flux:button size="sm" variant="danger" wire:click="borrar({{ $producto->idpro }})" wire:confirm="¿Seguro que deseas eliminar?">Borrar</flux:button>
+                                @endif
                             </td>
                         </tr>
                         @empty
