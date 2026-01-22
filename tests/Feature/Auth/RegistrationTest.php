@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\User;
-
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 
@@ -13,8 +11,8 @@ test('new users can register', function () {
         'name' => 'Test User',
         'email' => 'test@example.com',
         'cedula' => '1234567890',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Password123!@#',
+        'password_confirmation' => 'Password123!@#',
     ]);
 
     $response->assertSessionHasNoErrors()
