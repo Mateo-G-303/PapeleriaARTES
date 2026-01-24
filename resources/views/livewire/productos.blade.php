@@ -59,6 +59,14 @@
                         <flux:input label="Costo de Compra ($)" wire:model="preciocomprapro" type="number" step="0.01" />
                         <p class="text-xs text-blue-400 mt-1 italic">Costo neto proveedor</p>
                     </div>
+                    <div class="col-span-12 md:col-span-6 bg-yellow-50/40 p-4 rounded-lg border border-yellow-200">
+                        <flux:input
+                            label="Margen de Venta (%)"
+                            wire:model="margenventa"
+                            type="number"
+                            step="0.01"
+                            description="Porcentaje de ganancia sobre el costo de compra" />
+                    </div>
 
                     <div class="col-span-12 md:col-span-6 bg-green-50/30 p-4 rounded-lg border border-green-100">
                         <flux:input label="Precio Venta Público ($)" wire:model="precioventapro" type="number" step="0.01" />
@@ -142,6 +150,9 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cat.</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Costo</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                Margen
+                            </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">P. Venta</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rango</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Stock</th>
@@ -163,6 +174,9 @@
 
                             <td class="px-4 py-4 text-sm text-gray-500">
                                 ${{ number_format($producto->preciocomprapro, 2) }}
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-700 font-semibold">
+                                {{ number_format($producto->margenventa, 2) }}%
                             </td>
 
                             <td class="px-4 py-4 text-sm font-bold text-gray-900">

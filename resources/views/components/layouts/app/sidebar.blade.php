@@ -44,11 +44,10 @@
         @endif
 
         <!-- Compras -->
-        @if(Auth::user()->tienePermiso('compras.ver'))
         <flux:navlist.item icon="truck" href="{{ route('compras') }}" :current="request()->routeIs('compras')">
             Compras
         </flux:navlist.item>
-        @endif
+        
 
         <flux:spacer />
 
