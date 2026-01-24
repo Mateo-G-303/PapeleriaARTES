@@ -7,11 +7,13 @@ use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use App\Livewire\Productos;
+use App\Livewire\Proveedores;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RolController;
 use App\Http\Controllers\Admin\ConfiguracionController;
-use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\VentaController;
+use App\Livewire\Compras;
+use App\Livewire\AuditoriaIndex; // <-- No olvides importar esto arriba
 
 // Página de inicio
 Route::get('/', function () {
@@ -60,12 +62,15 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
+        
+    Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
 });
 
 // Rutas protegidas para usuarios normales (con timeout de sesión)
 Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
     Route::get('/productos', Productos::class)->name('productos');
-    Route::resource('proveedores', ProveedorController::class);
+    Route::get('/proveedores', Proveedores::class)->name('proveedores');
+    Route::get('/compras', Compras::class)->name('compras');
 });
 
 // ============================================

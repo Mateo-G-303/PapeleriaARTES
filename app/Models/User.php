@@ -64,4 +64,16 @@ class User extends Authenticatable
         }
         return 0;
     }
+
+public function tienePermiso(string $permiso): bool
+{
+    if (!$this->rol) {
+        return false;
+    }
+    
+    return $this->rol->permisos()
+        ->where('nombreper', $permiso)
+        ->exists();
+}
+
 }

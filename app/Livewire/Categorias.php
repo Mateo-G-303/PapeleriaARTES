@@ -24,12 +24,18 @@ class Categorias extends Component
 
     public function crear()
     {
+        if (!auth()->user()->tienePermiso('categorias.crear')) {
+            abort(403);
+        }
         $this->limpiarCampos();
         $this->modal = true;
     }
 
     public function editar($id)
     {
+        if (!auth()->user()->tienePermiso('categorias.editar')) {
+            abort(403);
+        }
         $cat = Categoria::find($id);
         $this->idcat_editar = $cat->idcat;
         $this->nombrecat = $cat->nombrecat;
@@ -39,6 +45,11 @@ class Categorias extends Component
 
     public function guardar()
     {
+        $permiso = $this->idcat_editar ? 'categorias.editar' : 'categorias.crear';
+        if (!auth()->user()->tienePermiso($permiso)) {
+            abort(403);
+        }
+        
         $this->validate();
 
         Categoria::updateOrCreate(
@@ -55,6 +66,9 @@ class Categorias extends Component
 
     public function borrar($id)
     {
+        if (!auth()->user()->tienePermiso('categorias.eliminar')) {
+            abort(403);
+        }
         Categoria::find($id)->delete();
     }
 
