@@ -13,9 +13,15 @@ class DetalleCompra extends Model
     protected $fillable = [
         'idcom',
         'idpro',
-        'cantidaddetc',
-        'preciocompra'
+        'cantidaddet',
+        'preciounitario',
+        'costototalpaquete'
     ];
+
+    public function compra()
+    {
+        return $this->belongsTo(Compra::class, 'idcom', 'idcom');
+    }
 
     public function producto()
     {
