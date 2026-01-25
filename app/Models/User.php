@@ -64,4 +64,16 @@ class User extends Authenticatable
         }
         return 0;
     }
+
+    // ✅ AGREGAR ESTE MÉTODO
+    public function hasRole($roleName)
+    {
+        return $this->rol && $this->rol->nombrerol === $roleName;
+    }
+
+    // ✅ AGREGAR RELACIÓN CON VENTAS
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class, 'user_id', 'id');
+    }
 }
