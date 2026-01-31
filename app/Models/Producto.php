@@ -20,7 +20,8 @@ class Producto extends Model
         'estadocatpro',
         'preciocomprapro',
         'precioventapro',
-        'stockminpro'
+        'stockminpro',
+        'margenventa'
     ];
 
     protected $casts = [
@@ -28,6 +29,7 @@ class Producto extends Model
         'preciomaxpro' => 'decimal:2',
         'preciocomprapro' => 'decimal:2',
         'precioventapro' => 'decimal:2',
+        'margenventa' => 'decimal:2',
         'estadocatpro' => 'boolean'
     ];
 
