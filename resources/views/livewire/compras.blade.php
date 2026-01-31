@@ -193,9 +193,14 @@
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
 
             <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-4">
+                    <img src="{{ asset('img/dinero.svg') }}"
+                        alt="Proveedores"
+                        class="w-14 h-14">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800">Compras</h2>
                     <p class="text-sm text-gray-500">Registro de compras a proveedores.</p>
+                </div>
                 </div>
 
                 <flux:button wire:click="abrirModal" variant="primary" icon="plus">
