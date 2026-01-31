@@ -48,6 +48,10 @@
             Compras
         </flux:navlist.item>
         
+        <!-- Reportes -->
+        <flux:navlist.item icon="chart-bar" href="{{ route('reportes.index') }}" :current="request()->routeIs('reportes.compras')">
+            Reportes
+        </flux:navlist.item>
 
         <flux:spacer />
 
@@ -153,5 +157,7 @@
     {{ $slot }}
 
     @fluxScripts
+    {{-- Chart.js --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
