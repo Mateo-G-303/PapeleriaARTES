@@ -11,9 +11,13 @@ use App\Livewire\Proveedores;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RolController;
 use App\Http\Controllers\Admin\ConfiguracionController;
+use App\Http\Controllers\ReporteComprasController;
+use App\Http\Controllers\ReporteDashboardController;
 use App\Http\Controllers\VentaController;
 use App\Livewire\Compras;
 use App\Livewire\AuditoriaIndex; // <-- No olvides importar esto arriba
+use App\Livewire\ReporteCompras;
+use App\Livewire\ReportesIndex;
 
 // Página de inicio
 Route::get('/', function () {
@@ -71,6 +75,13 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
     Route::get('/productos', Productos::class)->name('productos');
     Route::get('/proveedores', Proveedores::class)->name('proveedores');
     Route::get('/compras', Compras::class)->name('compras');
+
+    Route::get('/reportes', ReportesIndex::class)
+        ->name('reportes.index');
+
+    Route::get('/reportes/compras', ReporteCompras::class)
+        ->name('reportes.compras');
+
 });
 
 // ============================================

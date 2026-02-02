@@ -8,7 +8,6 @@ use App\Models\Proveedor;
 class Proveedores extends Component
 {
     public $proveedores;
-
     public $modal = false;
 
     public $idprov;
@@ -16,23 +15,26 @@ class Proveedores extends Component
     public $nombreprov;
     public $correoprov;
     public $telefonoprov;
+    public $direccionprov;
 
     protected function rules()
     {
         if ($this->idprov) {
             return [
-                'rucprov' => 'required|unique:proveedores,rucprov,' . $this->idprov . ',idprov',
-                'nombreprov' => 'required',
-                'correoprov' => 'required|email',
-                'telefonoprov' => 'required',
+                'rucprov'       => 'required|unique:proveedores,rucprov,' . $this->idprov . ',idprov',
+                'nombreprov'    => 'required',
+                'correoprov'    => 'required|email',
+                'telefonoprov'  => 'required',
+                'direccionprov' => 'required',
             ];
         }
 
         return [
-            'rucprov' => 'required|unique:proveedores,rucprov',
-            'nombreprov' => 'required',
-            'correoprov' => 'required|email',
-            'telefonoprov' => 'required',
+            'rucprov'       => 'required|unique:proveedores,rucprov',
+            'nombreprov'    => 'required',
+            'correoprov'    => 'required|email',
+            'telefonoprov'  => 'required',
+            'direccionprov' => 'required',
         ];
     }
 
@@ -60,10 +62,11 @@ class Proveedores extends Component
         Proveedor::updateOrCreate(
             ['idprov' => $this->idprov],
             [
-                'rucprov' => $this->rucprov,
-                'nombreprov' => $this->nombreprov,
-                'correoprov' => $this->correoprov,
-                'telefonoprov' => $this->telefonoprov,
+                'rucprov'       => $this->rucprov,
+                'nombreprov'    => $this->nombreprov,
+                'correoprov'    => $this->correoprov,
+                'telefonoprov'  => $this->telefonoprov,
+                'direccionprov' => $this->direccionprov,
             ]
         );
 
@@ -74,11 +77,12 @@ class Proveedores extends Component
     {
         $proveedor = Proveedor::findOrFail($id);
 
-        $this->idprov = $proveedor->idprov;
-        $this->rucprov = $proveedor->rucprov;
-        $this->nombreprov = $proveedor->nombreprov;
-        $this->correoprov = $proveedor->correoprov;
-        $this->telefonoprov = $proveedor->telefonoprov;
+        $this->idprov        = $proveedor->idprov;
+        $this->rucprov       = $proveedor->rucprov;
+        $this->nombreprov    = $proveedor->nombreprov;
+        $this->correoprov    = $proveedor->correoprov;
+        $this->telefonoprov  = $proveedor->telefonoprov;
+        $this->direccionprov = $proveedor->direccionprov;
 
         $this->modal = true;
     }
@@ -90,10 +94,11 @@ class Proveedores extends Component
 
     public function limpiarCampos()
     {
-        $this->idprov = null;
-        $this->rucprov = '';
-        $this->nombreprov = '';
-        $this->correoprov = '';
-        $this->telefonoprov = '';
+        $this->idprov        = null;
+        $this->rucprov       = '';
+        $this->nombreprov    = '';
+        $this->correoprov    = '';
+        $this->telefonoprov  = '';
+        $this->direccionprov = '';
     }
 }

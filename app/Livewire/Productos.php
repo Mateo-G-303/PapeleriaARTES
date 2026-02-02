@@ -22,6 +22,7 @@ class Productos extends Component
     public $preciominpro;
     public $preciomaxpro;
     public $stockminpro;
+    public $margenventa = 50;
 
     protected $rules = [
         'codbarraspro' => 'required|max:13',
@@ -33,7 +34,26 @@ class Productos extends Component
         'preciominpro' => 'required|numeric',
         'preciomaxpro' => 'required|numeric',
         'stockminpro' => 'required|integer',
+        'margenventa' => 'required|numeric|min:0',
     ];
+    public function updatedPreciocomprapro()
+    {
+        $this->calcularPrecioVenta();
+    }
+
+    public function updatedMargenventa()
+    {
+        $this->calcularPrecioVenta();
+    }
+
+    private function calcularPrecioVenta()
+    {
+        if ($this->preciocomprapro !== '' && $this->margenventa !== '') {
+            $this->precioventapro =
+                $this->preciocomprapro +
+                ($this->preciocomprapro * $this->margenventa / 100);
+        }
+    }
 
     public function render()
     {
@@ -69,6 +89,7 @@ class Productos extends Component
         $this->preciominpro = $producto->preciominpro;
         $this->preciomaxpro = $producto->preciomaxpro;
         $this->stockminpro = $producto->stockminpro;
+        $this->margenventa = $producto->margenventa;
 
         $this->modal = true;
     }
@@ -79,7 +100,7 @@ class Productos extends Component
         if (!auth()->user()->tienePermiso($permiso)) {
             abort(403);
         }
-        
+
         $this->validate();
 
         Producto::updateOrCreate(
@@ -92,6 +113,7 @@ class Productos extends Component
                 'stockpro' => $this->stockpro,
                 'preciominpro' => $this->preciominpro,
                 'preciomaxpro' => $this->preciomaxpro,
+                'margenventa' => $this->margenventa,
                 'estadocatpro' => true,
                 'preciocomprapro' => $this->preciocomprapro,
                 'stockminpro' => $this->stockminpro
@@ -122,6 +144,7 @@ class Productos extends Component
         $this->preciominpro = '';
         $this->preciomaxpro = '';
         $this->stockminpro = '';
+        $this->margenventa = 50;
 
         $this->modal = false;
     }
