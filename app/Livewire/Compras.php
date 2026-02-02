@@ -8,12 +8,12 @@ use App\Models\DetalleCompra;
 use App\Models\Proveedor;
 use App\Models\Producto;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class Compras extends Component
 {
     public $proveedores;
     public $productos;
-    public $compras;
 
     public $idprov;
     public $idpro;
@@ -33,15 +33,28 @@ class Compras extends Component
 
     public $errorProveedor = null;
 
+    //Para buscar
+    public $search = '';
+    //Paginacion
+    use WithPagination;
+
+    protected $paginationTheme = 'tailwind';
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+
     public function mount()
     {
         $this->proveedores = Proveedor::all();
         $this->productos   = Producto::all();
-        $this->compras     = Compra::with('proveedor')->orderBy('idcom', 'desc')->get();
+
     }
 
     public function abrirModal()
     {
+        $this->search ='';
         $this->modal = true;
         $this->errorProveedor = null;
     }
@@ -159,7 +172,6 @@ class Compras extends Component
 
             $compra = Compra::create([
                 'idprov'        => $this->idprov,
-                'codigocom'     => 'COM-' . time(),
                 'fechacom'      => now(),
                 'montototalcom' => $total,
             ]);
@@ -189,9 +201,7 @@ class Compras extends Component
 
         $this->cerrarModal();
 
-        $this->compras = Compra::with('proveedor')
-            ->orderBy('idcom', 'desc')
-            ->get();
+        
     }
     public function verDetalle($idcom)
     {
@@ -212,6 +222,20 @@ class Compras extends Component
 
     public function render()
     {
-        return view('livewire.compras');
+        $compras = Compra::with('proveedor')
+        ->when($this->search, function ($query) {
+            $query->where(function ($q) {
+
+                $q->where('codigocom', 'ILIKE', '%' . $this->search . '%')
+                  ->orWhereHas('proveedor', function ($p) {
+                      $p->where('nombreprov', 'ILIKE', '%' . $this->search . '%');
+                  })
+
+                ->orWhereRaw('fechacom::text ILIKE ?', ['%' . $this->search . '%']);
+            });
+        })
+        ->orderBy('idcom', 'desc')
+        ->paginate(5);
+        return view('livewire.compras', compact('compras'));
     }
 }

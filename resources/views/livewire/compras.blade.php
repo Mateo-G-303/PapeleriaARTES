@@ -195,17 +195,27 @@
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-4">
                     <img src="{{ asset('img/dinero.svg') }}"
-                        alt="Proveedores"
+                        alt="Compras"
                         class="w-14 h-14">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800">Compras</h2>
                     <p class="text-sm text-gray-500">Registro de compras a proveedores.</p>
                 </div>
                 </div>
+                <div class="flex items-center gap-3">
+                    <input
+                        type="text"
+                        wire:model.live="search"
+                        placeholder="Buscar por código, proveedor o fecha"
+                        class="border rounded px-3 py-2 w-80"
+                    >
 
-                <flux:button wire:click="abrirModal" variant="primary" icon="plus">
-                    Nueva Compra
-                </flux:button>
+                    <flux:button wire:click="abrirModal" variant="primary" icon="plus">
+                        Nueva Compra
+                    </flux:button>
+                </div>
+                
+                
             </div>
 
             <div class="overflow-x-auto border rounded-lg">
@@ -229,16 +239,28 @@
                             <td class="px-6 py-4 text-right">
                                 <button
                                     wire:click="verDetalle({{ $c->idcom }})"
-                                    class="px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
-                                    Ver productos
+                                    class="p-2 rounded-lg hover:bg-indigo-50 transition"
+                                    title="Ver productos">
+
+                                    <img
+                                        src="{{ asset('img/Eye.svg') }}"
+                                        alt="Ver productos"
+                                        class="w-6 h-6"
+                                    >
                                 </button>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
+                
             </div>
+            
+            
 
+        </div>
+        <div class="mt-4">
+        {{ $compras->links() }}
         </div>
         @endif
         @if($modalDetalle)
@@ -265,8 +287,8 @@
                             <tr>
                                 <th class="px-4 py-2 text-left text-xs uppercase">Producto</th>
                                 <th class="px-4 py-2 text-left text-xs uppercase">Cantidad</th>
-                                <th class="px-4 py-2 text-left text-xs uppercase">Precio Unit.</th>
                                 <th class="px-4 py-2 text-left text-xs uppercase">Costo</th>
+                                <th class="px-4 py-2 text-left text-xs uppercase">Precio Unit.</th>
                                 <th class="px-4 py-2 text-left text-xs uppercase">Margen %</th>
                                 <th class="px-4 py-2 text-left text-xs uppercase">Precio Venta</th>
                             </tr>
@@ -280,18 +302,26 @@
                                 <td class="px-4 py-2">
                                     {{ $d->cantidaddet }}
                                 </td>
-                                <td class="px-4 py-2">
-                                    ${{ number_format($d->preciounitario, 4) }}
-                                </td>
                                 <td class="px-4 py-2 font-semibold">
                                     ${{ number_format($d->costototalpaquete, 2) }}
                                 </td>
                                 <td class="px-4 py-2">
+                                    ${{ number_format($d->preciounitario, 2) }}
+                                </td>
+                                @php
+                                    $precioVenta = $d->preciounitario + ($d->preciounitario * ($d->producto->margenventa / 100));
+                                @endphp
+
+                                <td class="px-4 py-2">
                                     {{ number_format($d->producto->margenventa, 2) }} %
                                 </td>
+
                                 <td class="px-4 py-2 text-green-600 font-semibold">
-                                    ${{ number_format($d->producto->precioventapro, 2) }}
+                                    ${{ number_format($precioVenta, 2) }}
                                 </td>
+                                <!--<td class="px-4 py-2 text-green-600 font-semibold">
+                                    ${{ number_format($d->producto->precioventapro, 2) }}
+                                </td>-->
                             </tr>
                             @endforeach
 
@@ -320,4 +350,5 @@
         @endif
 
     </div>
+    
 </div>
