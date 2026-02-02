@@ -18,6 +18,7 @@ use App\Livewire\Compras;
 use App\Livewire\AuditoriaIndex; // <-- No olvides importar esto arriba
 use App\Livewire\ReporteCompras;
 use App\Livewire\ReportesIndex;
+use App\Livewire\RproductosCategoria;
 
 // Página de inicio
 Route::get('/', function () {
@@ -81,6 +82,9 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
 
     Route::get('/reportes/compras', ReporteCompras::class)
         ->name('reportes.compras');
+
+    Route::get('/reportes/comprasCategoria',RproductosCategoria::class)
+        ->name('reportes.productosCategoria');
 
 });
 
