@@ -13,7 +13,7 @@
         <img
             src="{{ asset('img/reportes.svg') }}"
             alt="Reportes"
-            class="h-36 hidden md:block">
+            class="h-30 hidden md:block">
 
     </div>
 
@@ -24,10 +24,14 @@
             href="{{ route('reportes.compras') }}"
             class="block cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
 
-            <div class="flex items-center gap-4">
-                <div class="p-3 rounded-lg bg-indigo-100 text-indigo-600">
-                    📦
-                </div>
+            <div class="bg-white p-4 rounded-xl 
+            shadow-[10px_12px_25px_rgba(0,0,0,0.28)]
+            flex items-center gap-4">
+                {{-- Imagen --}}
+                <img
+                    src="{{ asset('img/Rcompras.svg') }}"
+                    alt="Compras"
+                    class="w-15 h-15 object-contain">
                 <div>
                     <h2 class="font-bold text-lg">Reporte de Compras</h2>
                     <p class="text-sm text-gray-500">
@@ -39,15 +43,35 @@
         </a>
 
         {{-- REPORTES FUTUROS (DESHABILITADOS) --}}
-        @for($i = 0; $i < 5; $i++)
+        @for($i = 0; $i < 4; $i++)
             <div
             class="bg-gray-100 rounded-xl p-6 text-gray-400 cursor-not-allowed">
 
             <h2 class="font-bold">Próximamente</h2>
             <p class="text-sm">Nuevo reporte</p>
+            </div>
+        @endfor
+    <a
+        href="{{ route('reportes.productosCategoria') }}"
+        class="block cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
 
-    </div>
-    @endfor
+        <div class="bg-white p-4 rounded-xl 
+            shadow-[10px_12px_25px_rgba(0,0,0,0.28)]
+            flex items-center gap-4">
+            {{-- Imagen --}}
+                <img
+                    src="{{ asset('img/Graficobarras.png') }}"
+                    alt="Compras"
+                    class="w-15 h-15 object-contain">
+            <div>
+                <h2 class="font-bold text-lg">Gráfico por Categorias</h2>
+                <p class="text-sm text-gray-500">
+                    Productos Por Categoría
+                </p>
+            </div>
+        </div>
+
+    </a>
 
 </div>
 </div>
