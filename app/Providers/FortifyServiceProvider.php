@@ -13,6 +13,7 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Fortify;
 use App\Models\User;
 use App\Models\Configuracion;
+use App\Models\Log;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -80,12 +81,19 @@ class FortifyServiceProvider extends ServiceProvider
                     } catch (\Exception $e) {
                         $maxIntentos = 5;
                     }
-                    
+
                     $nuevoIntentos = $user->intentos_fallidos + 1;
                     $datos = ['intentos_fallidos' => $nuevoIntentos];
 
                     if ($nuevoIntentos >= $maxIntentos) {
                         $datos['bloqueado_hasta'] = now()->addMinutes(15);
+                        // --- AGREGAR AQUÍ ---
+                        \App\Models\Log::create([
+                            'user_id' => $user->id,
+                            'idnivel' => 1, // CRÍTICO
+                            'mensajelogs' => "Cuenta bloqueada automáticamente por {$maxIntentos} intentos fallidos. IP: " . $request->ip(),
+                            'fechalogs' => now(),
+                        ]);
                     }
 
                     $user->update($datos);
@@ -96,6 +104,14 @@ class FortifyServiceProvider extends ServiceProvider
                             'email' => ['Cuenta bloqueada por exceso de intentos fallidos.'],
                         ]);
                     }
+
+                    // --- AGREGAR AQUÍ ---
+                    \App\Models\Log::create([
+                        'user_id' => $user->id,
+                        'idnivel' => 2, // ADVERTENCIA
+                        'mensajelogs' => "Contraseña incorrecta para el usuario: {$user->email}. Intento {$nuevoIntentos} de {$maxIntentos}.",
+                        'fechalogs' => now(),
+                    ]);
 
                     throw ValidationException::withMessages([
                         'email' => ["Credenciales incorrectas. Intentos restantes: {$intentosRestantes}"],
@@ -117,7 +133,7 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = mb_strtolower($request->input(Fortify::username())).'|'.$request->ip();
+            $throttleKey = mb_strtolower($request->input(Fortify::username())) . '|' . $request->ip();
             return Limit::perMinute(5)->by($throttleKey);
         });
 

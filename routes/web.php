@@ -19,6 +19,7 @@ use App\Livewire\AuditoriaIndex; // <-- No olvides importar esto arriba
 use App\Livewire\ReporteCompras;
 use App\Livewire\ReportesIndex;
 use App\Livewire\RproductosCategoria;
+use App\Livewire\LogIndex; // <--- Añade esta línea
 
 // Página de inicio
 Route::get('/', function () {
@@ -69,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
         
     Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
+    Route::get('/logs', LogIndex::class)->name('logs');
 });
 
 // Rutas protegidas para usuarios normales (con timeout de sesión)

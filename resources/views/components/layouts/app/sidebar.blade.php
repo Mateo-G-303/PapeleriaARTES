@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+
 <head>
     @include('partials.head')
 </head>
+
 <body class="min-h-screen bg-white dark:bg-zinc-800">
     <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
@@ -47,7 +49,7 @@
         <flux:navlist.item icon="truck" href="{{ route('compras') }}" :current="request()->routeIs('compras')">
             Compras
         </flux:navlist.item>
-        
+
         <!-- Reportes -->
         <flux:navlist.item icon="chart-bar" href="{{ route('reportes.index') }}" :current="request()->routeIs('reportes.compras')">
             Reportes
@@ -75,8 +77,10 @@
             Configuraciones
         </flux:navlist.item>
         <flux:navlist.item icon="clipboard-document-list" href="{{ route('auditoria') }}">Auditoría</flux:navlist.item>
+        <flux:navlist.item icon="shield-exclamation" href="{{ route('logs') }}" :current="request()->routeIs('logs')">
+            Seguridad y Logs
+        </flux:navlist.item>
         @endif
-
 
         <flux:spacer />
 
@@ -160,4 +164,5 @@
     {{-- Chart.js --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
+
 </html>

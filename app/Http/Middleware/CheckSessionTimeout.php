@@ -17,7 +17,7 @@ class CheckSessionTimeout
         }
 
         $user = Auth::user();
-        
+
         // Verificar que el usuario tenga relación con rol
         if (!$user->rol) {
             return $next($request);
@@ -39,10 +39,18 @@ class CheckSessionTimeout
         $inactiveMinutes = (now()->timestamp - $lastActivity) / 60;
 
         if ($inactiveMinutes >= $sessionLifetime) {
+
+            // --- AGREGAR LOG AQUÍ ---
+            \App\Models\Log::create([
+                'user_id' => $user->id,
+                'idnivel' => 3, // INFORMATIVO (o ADVERTENCIA si prefieres)
+                'mensajelogs' => "Sesión cerrada automáticamente por inactividad ({$sessionLifetime} min).",
+                'fechalogs' => now(),
+            ]);
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            
+
             return redirect()->route('login')->withErrors([
                 'email' => 'Su sesión ha expirado por inactividad.'
             ]);
