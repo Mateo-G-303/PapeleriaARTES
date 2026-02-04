@@ -20,6 +20,7 @@ use App\Livewire\ReporteCompras;
 use App\Livewire\ReportesIndex;
 use App\Livewire\RproductosCategoria;
 use App\Livewire\LogIndex; // <--- Añade esta línea
+use App\Livewire\ReportesGraficos;
 
 // Página de inicio
 Route::get('/', function () {
@@ -68,9 +69,11 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
-        
+
     Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
     Route::get('/logs', LogIndex::class)->name('logs');
+        Route::get('/reportes/seguridad', \App\Livewire\ReportesGraficos::class)
+        ->name('reportes.seguridad');
 });
 
 // Rutas protegidas para usuarios normales (con timeout de sesión)
@@ -85,7 +88,7 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
     Route::get('/reportes/compras', ReporteCompras::class)
         ->name('reportes.compras');
 
-    Route::get('/reportes/comprasCategoria',RproductosCategoria::class)
+    Route::get('/reportes/comprasCategoria', RproductosCategoria::class)
         ->name('reportes.productosCategoria');
 
 });
