@@ -157,8 +157,8 @@
             <div class="logo">🎨 PAPELERÍA ARTES</div>
             <div class="subtitle">Tu mejor opción en útiles escolares y de oficina</div>
             <div class="subtitle">RUC: 1234567890001</div>
-            <div class="subtitle">Dirección: Av. Principal #123, Quito - Ecuador</div>
-            <div class="subtitle">Teléfono: (02) 234-5678 | Email: ventas@papeleriaartes.com</div>
+            <div class="subtitle">Dirección: González Suárez #12, Cotacachi - Ecuador - Imbabura</div>
+            <div class="subtitle">Teléfono: 0999698582 | Email: papaeleriaArt@gmail.com</div>
         </div>
 
         <div class="factura-info">
@@ -249,8 +249,8 @@
             <p>Este documento es una representación impresa de una factura electrónica</p>
             <p>Conserve este documento para cualquier reclamo o cambio</p>
             <p>Papelería ARTES - Comprometidos con tu educación y creatividad</p>
-            <p>RUC: 1234567890001 | Tel: (02) 234-5678</p>
-        </div>
+            <p>RUC: 1234567890001 | Tel: 0999698582 </p>
+        </div>g
     </div>
     <script>
         window.onload = function() {
