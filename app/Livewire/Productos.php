@@ -5,79 +5,118 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Categoria;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Productos extends Component
 {
-    // Variables para el Formulario
-    public $id_producto_editar; // Para saber si estamos editando
-    public $modal = false;      // Controla si la ventana está abierta
+    public $id_producto_editar;
+    public $modal = false;
 
-    // Campos de la base de datos
     public $codbarraspro;
     public $nombrepro;
     public $idcat;
     public $precioventapro;
     public $stockpro;
-    // (Puedes añadir más campos como preciocompra, stockmin, etc. aquí)
+    public $preciocomprapro;
+    public $preciominpro;
+    public $preciomaxpro;
+    public $stockminpro;
+    public $margenventa = 50;
 
-    // Reglas de validación
     protected $rules = [
         'codbarraspro' => 'required|max:13',
         'nombrepro' => 'required|min:3',
         'idcat' => 'required',
         'precioventapro' => 'required|numeric',
         'stockpro' => 'required|integer',
+        'preciocomprapro' => 'required|numeric',
+        'preciominpro' => 'required|numeric',
+        'preciomaxpro' => 'required|numeric',
+        'stockminpro' => 'required|integer',
+        'margenventa' => 'required|numeric|min:0',
     ];
+    public function updatedPreciocomprapro()
+    {
+        $this->calcularPrecioVenta();
+    }
+
+    public function updatedMargenventa()
+    {
+        $this->calcularPrecioVenta();
+    }
+
+    private function calcularPrecioVenta()
+    {
+        if ($this->preciocomprapro !== '' && $this->margenventa !== '') {
+            $this->precioventapro =
+                $this->preciocomprapro +
+                ($this->preciocomprapro * $this->margenventa / 100);
+        }
+    }
 
     public function render()
     {
         $productos = Producto::all();
-        $categorias = Categoria::all(); // Necesario para el <select> del formulario
+        $categorias = Categoria::all();
 
         return view('livewire.productos', compact('productos', 'categorias'));
     }
 
-    // Abrir Modal para CREAR
     public function crear()
     {
+        if (!auth()->user()->tienePermiso('productos.crear')) {
+            abort(403);
+        }
         $this->limpiarCampos();
         $this->modal = true;
     }
 
-    // Abrir Modal para EDITAR
     public function editar($id)
     {
+        if (!auth()->user()->tienePermiso('productos.editar')) {
+            abort(403);
+        }
         $producto = Producto::find($id);
-        
+
         $this->id_producto_editar = $producto->idpro;
         $this->codbarraspro = $producto->codbarraspro;
         $this->nombrepro = $producto->nombrepro;
         $this->idcat = $producto->idcat;
         $this->precioventapro = $producto->precioventapro;
         $this->stockpro = $producto->stockpro;
+        $this->preciocomprapro = $producto->preciocomprapro;
+        $this->preciominpro = $producto->preciominpro;
+        $this->preciomaxpro = $producto->preciomaxpro;
+        $this->stockminpro = $producto->stockminpro;
+        $this->margenventa = $producto->margenventa;
 
         $this->modal = true;
     }
 
-    // Guardar o Actualizar
     public function guardar()
     {
+        $permiso = $this->id_producto_editar ? 'productos.editar' : 'productos.crear';
+        if (!auth()->user()->tienePermiso($permiso)) {
+            abort(403);
+        }
+
         $this->validate();
 
         Producto::updateOrCreate(
-            ['idpro' => $this->id_producto_editar], // Si existe este ID, actualiza
+            ['idpro' => $this->id_producto_editar],
             [
                 'codbarraspro' => $this->codbarraspro,
                 'nombrepro' => $this->nombrepro,
                 'idcat' => $this->idcat,
                 'precioventapro' => $this->precioventapro,
                 'stockpro' => $this->stockpro,
-                // Valores por defecto para lo que no pedimos en el form:
-                'preciominpro' => 0, 
-                'preciomaxpro' => 0,
+                'preciominpro' => $this->preciominpro,
+                'preciomaxpro' => $this->preciomaxpro,
+                'margenventa' => $this->margenventa,
                 'estadocatpro' => true,
-                'preciocomprapro' => 0,
-                'stockminpro' => 5
+                'preciocomprapro' => $this->preciocomprapro,
+                'stockminpro' => $this->stockminpro
             ]
         );
 
@@ -85,13 +124,14 @@ class Productos extends Component
         $this->limpiarCampos();
     }
 
-    // Borrar Producto
     public function borrar($id)
     {
+        if (!auth()->user()->tienePermiso('productos.eliminar')) {
+            abort(403);
+        }
         Producto::find($id)->delete();
     }
 
-    // Cerrar Modal y limpiar
     public function limpiarCampos()
     {
         $this->id_producto_editar = null;
@@ -100,6 +140,55 @@ class Productos extends Component
         $this->idcat = '';
         $this->precioventapro = '';
         $this->stockpro = '';
+        $this->preciocomprapro = '';
+        $this->preciominpro = '';
+        $this->preciomaxpro = '';
+        $this->stockminpro = '';
+        $this->margenventa = 50;
+
         $this->modal = false;
+    }
+
+    public function exportarCSV()
+    {
+        $productos = DB::select('SELECT * FROM sp_exportar_todo_inventario()');
+
+        $fileName = 'inventario_completo_' . date('Y-m-d_H-i') . '.csv';
+
+        return response()->streamDownload(function () use ($productos) {
+            $handle = fopen('php://output', 'w');
+
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($handle, [
+                'ID',
+                'CÓDIGO BARRAS',
+                'PRODUCTO',
+                'CATEGORÍA',
+                'COSTO COMPRA',
+                'PRECIO VENTA',
+                'PRECIO MÍNIMO',
+                'PRECIO MÁXIMO',
+                'STOCK ACTUAL',
+                'STOCK ALERTA'
+            ], ';');
+
+            foreach ($productos as $row) {
+                fputcsv($handle, [
+                    $row->id_producto,
+                    $row->codigo,
+                    $row->nombre,
+                    $row->categoria,
+                    $row->costo_compra,
+                    $row->precio_venta,
+                    $row->precio_min,
+                    $row->precio_max,
+                    $row->stock_actual,
+                    $row->alerta_stock
+                ], ';');
+            }
+
+            fclose($handle);
+        }, $fileName);
     }
 }

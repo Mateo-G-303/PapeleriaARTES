@@ -7,11 +7,18 @@ use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use App\Livewire\Productos;
+use App\Livewire\Proveedores;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RolController;
-use App\Http\Controllers\Admin\ConfiguracionController as AdminConfiguracionController;
-use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\Admin\ConfiguracionController;
+use App\Http\Controllers\ReporteComprasController;
+use App\Http\Controllers\ReporteDashboardController;
 use App\Http\Controllers\VentaController;
+use App\Livewire\Compras;
+use App\Livewire\AuditoriaIndex; // <-- No olvides importar esto arriba
+use App\Livewire\ReporteCompras;
+use App\Livewire\ReportesIndex;
+use App\Livewire\RproductosCategoria;
 
 // Página de inicio
 Route::get('/', function () {
@@ -60,12 +67,25 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
+        
+    Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
 });
 
 // Rutas protegidas para usuarios normales (con timeout de sesión)
 Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
     Route::get('/productos', Productos::class)->name('productos');
-    Route::resource('proveedores', ProveedorController::class);
+    Route::get('/proveedores', Proveedores::class)->name('proveedores');
+    Route::get('/compras', Compras::class)->name('compras');
+
+    Route::get('/reportes', ReportesIndex::class)
+        ->name('reportes.index');
+
+    Route::get('/reportes/compras', ReporteCompras::class)
+        ->name('reportes.compras');
+
+    Route::get('/reportes/comprasCategoria',RproductosCategoria::class)
+        ->name('reportes.productosCategoria');
+
 });
 
 // ============================================
@@ -97,9 +117,9 @@ Route::middleware(['auth', 'role:Administrador'])->prefix('admin')->name('admin.
     Route::patch('roles/{id}/toggle', [RolController::class, 'toggleStatus'])->name('roles.toggle');
 
     // Configuraciones de Admin (sesión, bloqueo, IVA)
-    Route::get('configuraciones', [AdminConfiguracionController::class, 'index'])->name('configuraciones.index');
-    Route::put('configuraciones', [AdminConfiguracionController::class, 'update'])->name('configuraciones.update');
-    Route::post('configuraciones/iva', [AdminConfiguracionController::class, 'actualizarIva'])->name('configuraciones.iva');
+    Route::get('configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
+    Route::put('configuraciones', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
+    Route::post('configuraciones/iva', [ConfiguracionController::class, 'actualizarIva'])->name('configuraciones.iva');
 });
 
 // ============================================

@@ -98,6 +98,10 @@ class VentaController extends Controller
 
     public function store(Request $request)
     {
+        if (!auth()->user()->tienePermiso('ventas.crear')) {
+            abort(403);
+        }
+        
         $request->validate([
             'tipo_factura' => 'required|in:factura,consumidor_final',
             'productos' => 'required|array|min:1',
@@ -146,7 +150,6 @@ class VentaController extends Controller
                 );
             }
 
-            // Crear venta
             $venta = Venta::create([
                 'user_id' => Auth::id(),
                 'idcli' => $cliente->idcli,
@@ -156,16 +159,13 @@ class VentaController extends Controller
                 'totalven' => $total
             ]);
 
-            // Crear detalles y actualizar stock
             foreach ($request->productos as $item) {
                 $producto = Producto::find($item['idpro']);
 
-                // Verificar stock disponible
                 if (!$producto->tieneStockDisponible($item['cantidad'])) {
                     throw new \Exception("Stock insuficiente para: {$producto->nombrepro}");
                 }
 
-                // Crear detalle
                 DetalleVenta::create([
                     'idven' => $venta->idven,
                     'idpro' => $producto->idpro,

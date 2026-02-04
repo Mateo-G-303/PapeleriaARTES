@@ -65,15 +65,15 @@ class User extends Authenticatable
         return 0;
     }
 
-    // ✅ AGREGAR ESTE MÉTODO
-    public function hasRole($roleName)
-    {
-        return $this->rol && $this->rol->nombrerol === $roleName;
+public function tienePermiso(string $permiso): bool
+{
+    if (!$this->rol) {
+        return false;
     }
+    
+    return $this->rol->permisos()
+        ->where('nombreper', $permiso)
+        ->exists();
+}
 
-    // ✅ AGREGAR RELACIÓN CON VENTAS
-    public function ventas()
-    {
-        return $this->hasMany(Venta::class, 'user_id', 'id');
-    }
 }
