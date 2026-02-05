@@ -21,6 +21,7 @@ use App\Livewire\ReportesIndex;
 use App\Livewire\RproductosCategoria;
 use App\Livewire\LogIndex; // <--- Añade esta línea
 use App\Livewire\ReportesGraficos;
+use App\Http\Controllers\ExportController;
 
 // Página de inicio
 Route::get('/', function () {
@@ -72,8 +73,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
     Route::get('/logs', LogIndex::class)->name('logs');
-        Route::get('/reportes/seguridad', \App\Livewire\ReportesGraficos::class)
+    Route::get('/reportes/seguridad', \App\Livewire\ReportesGraficos::class)
         ->name('reportes.seguridad');
+    // Rutas para descargar CSV
+    Route::get('/exportar/logs', [ExportController::class, 'exportarLogs'])->name('exportar.logs');
+    Route::get('/exportar/auditoria', [ExportController::class, 'exportarAuditoria'])->name('exportar.auditoria');
 });
 
 // Rutas protegidas para usuarios normales (con timeout de sesión)
@@ -90,7 +94,6 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
 
     Route::get('/reportes/comprasCategoria', RproductosCategoria::class)
         ->name('reportes.productosCategoria');
-
 });
 
 // ============================================
