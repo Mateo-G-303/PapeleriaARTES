@@ -128,6 +128,18 @@ class FortifyServiceProvider extends ServiceProvider
                     'bloqueado_hasta' => null
                 ]);
             }
+            // --- AGREGAR LOG DE INICIO DE SESIÓN ---
+            try {
+                \App\Models\Log::create([
+                    'user_id' => $user->id,
+                    'idnivel' => 3, // Nivel 3: INFORMATIVO (Azul en tus gráficas)
+                    'mensajelogs' => 'Inicio de sesión exitoso. IP: ' . request()->ip(),
+                    'fechalogs' => now(),
+                ]);
+            } catch (\Exception $e) {
+                // Opcional: Si falla el log, no queremos bloquear al usuario, solo ignoramos el error
+                // o lo guardamos en el log de Laravel por si acaso.
+            }
 
             return $user;
         });
