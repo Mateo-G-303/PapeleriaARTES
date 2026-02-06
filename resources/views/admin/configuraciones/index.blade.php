@@ -2,8 +2,8 @@
 
 @section('content')
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
+    <div class="col-md-8">
+        <div class="card mb-4">
             <div class="card-header">
                 <h4>Parámetros de Sesión y Bloqueo</h4>
             </div>
@@ -31,6 +31,40 @@
 
                     <button type="submit" class="btn btn-primary">Guardar Configuración</button>
                 </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="bi bi-database"></i> Respaldos del Sistema</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-file-earmark-code text-primary" style="font-size: 2.5rem;"></i>
+                                <h5 class="mt-3">Backup Técnico</h5>
+                                <p class="text-muted small">Archivo .SQL completo para restauración del sistema</p>
+                                <a href="{{ route('admin.configuraciones.backup') }}" class="btn btn-primary">
+                                    <i class="bi bi-download"></i> Descargar .SQL
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card bg-light h-100">
+                            <div class="card-body text-center">
+                                <i class="bi bi-file-earmark-excel text-success" style="font-size: 2.5rem;"></i>
+                                <h5 class="mt-3">Exportar Datos</h5>
+                                <p class="text-muted small">Excel con todos los datos del negocio</p>
+                                <a href="{{ route('admin.configuraciones.exportar-datos') }}" class="btn btn-success">
+                                    <i class="bi bi-download"></i> Descargar Excel
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

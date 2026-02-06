@@ -63,13 +63,22 @@ class FortifyServiceProvider extends ServiceProvider
                 return null;
             }
 
-            // Verificar si está bloqueado
-            if (method_exists($user, 'estaBloqueado') && $user->estaBloqueado()) {
-                $minutos = $user->minutosRestantesBloqueo();
-                throw ValidationException::withMessages([
-                    'email' => ["Su cuenta está bloqueada. Intente en {$minutos} minutos."],
-                ]);
-            }
+           // Verificar si está bloqueado
+             if (method_exists($user, 'estaBloqueado') && $user->estaBloqueado()) {
+    
+             $tiempoTotalEnMinutos = $user->minutosRestantesBloqueo();
+    
+            $minutos = floor($tiempoTotalEnMinutos);
+    
+            $segundos = round(($tiempoTotalEnMinutos - $minutos) * 60);
+
+                throw ValidationException::withMessages([   
+        'email' => [trans('auth.throttle', [
+            'minutes' => $minutos, 
+            'seconds' => $segundos
+        ])],
+    ]);
+}
 
             // Verificar contraseña
             if (!Hash::check($request->password, $user->password)) {

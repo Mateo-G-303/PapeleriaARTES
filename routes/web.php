@@ -134,3 +134,6 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
 
 //Ruta de Categorías
 Route::get('/categorias', App\Livewire\Categorias::class)->name('categorias');
+
+Route::get('configuraciones/backup', [ConfiguracionController::class, 'backupDatabase'])->name('admin.configuraciones.backup');
+Route::get('configuraciones/exportar-datos', [ConfiguracionController::class, 'exportarDatosNegocio'])->name('admin.configuraciones.exportar-datos');
