@@ -76,10 +76,19 @@
         <flux:navlist.item icon="cog-6-tooth" href="{{ route('admin.configuraciones.index') }}" :current="request()->routeIs('admin.configuraciones.*')">
             Configuraciones
         </flux:navlist.item>
-        <flux:navlist.item icon="clipboard-document-list" href="{{ route('auditoria') }}">Auditoría</flux:navlist.item>
-        <flux:navlist.item icon="shield-exclamation" href="{{ route('logs') }}" :current="request()->routeIs('logs')">
+        @endif
+
+        @if(in_array(Auth::user()->rol->nombrerol, ['Administrador', 'Auditor']))
+
+        {{-- Ambos ven Auditoría y Logs --}}
+        <flux:navlist.item icon="clipboard-document-list" href="{{ route('admin.auditoria') }}" :current="request()->routeIs('admin.auditoria')">
+            Auditoría
+        </flux:navlist.item>
+
+        <flux:navlist.item icon="shield-exclamation" href="{{ route('admin.logs') }}" :current="request()->routeIs('admin.logs')">
             Seguridad y Logs
         </flux:navlist.item>
+
         @endif
 
         <flux:spacer />

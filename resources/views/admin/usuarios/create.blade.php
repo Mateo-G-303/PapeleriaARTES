@@ -40,7 +40,7 @@
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña *</label>
                         <input type="password" class="form-control" id="password" name="password" required minlength="8">
-                        <small class="text-muted">Mínimo 8 caracteres</small>
+                        <small class="text-muted">Mínimo 8 caracteres, mayúsculas, minúsculas, números, simbolos</small>
                     </div>
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secondary">Cancelar</a>

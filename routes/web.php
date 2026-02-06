@@ -70,19 +70,12 @@ Route::middleware(['auth'])->group(function () {
             ),
         )
         ->name('two-factor.show');
-
-    Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
-    Route::get('/logs', LogIndex::class)->name('logs');
-    Route::get('/reportes/seguridad', \App\Livewire\ReportesGraficos::class)
-        ->name('reportes.seguridad');
-    // Rutas para descargar CSV
-    Route::get('/exportar/logs', [ExportController::class, 'exportarLogs'])->name('exportar.logs');
-    Route::get('/exportar/auditoria', [ExportController::class, 'exportarAuditoria'])->name('exportar.auditoria');
 });
 
 // Rutas protegidas para usuarios normales (con timeout de sesión)
 Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
     Route::get('/productos', Productos::class)->name('productos');
+    Route::get('/categorias', App\Livewire\Categorias::class)->name('categorias');
     Route::get('/proveedores', Proveedores::class)->name('proveedores');
     Route::get('/compras', Compras::class)->name('compras');
 
@@ -127,6 +120,14 @@ Route::middleware(['auth', 'role:Administrador'])->prefix('admin')->name('admin.
     // Configuraciones
     Route::get('configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
     Route::put('configuraciones', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
+
+    //Auditoria y Logs
+    Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
+    Route::get('/logs', LogIndex::class)->name('logs');
+    Route::get('/reportes/seguridad', \App\Livewire\ReportesGraficos::class)
+        ->name('reportes.seguridad');
+    Route::get('/exportar/logs', [ExportController::class, 'exportarLogs'])->name('exportar.logs');
+    Route::get('/exportar/auditoria', [ExportController::class, 'exportarAuditoria'])->name('exportar.auditoria');
 });
 
 // Rutas de Ventas - Propietario y Empleado
@@ -139,6 +140,3 @@ Route::middleware(['auth', 'session.timeout'])->group(function () {
     Route::get('/ventas/{id}/factura/ver', [VentaController::class, 'verFactura'])->name('ventas.factura.ver');
     Route::post('/ventas/buscar-producto', [VentaController::class, 'buscarProducto'])->name('ventas.buscar-producto');
 });
-
-//Ruta de Categorías
-Route::get('/categorias', App\Livewire\Categorias::class)->name('categorias');
