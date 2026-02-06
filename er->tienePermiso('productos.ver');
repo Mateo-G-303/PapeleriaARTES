@@ -1,0 +1,7 @@
+[90m= [39m[34;4mApp\Models\Rol[39;24m {#6874
+    [34midrol[39m: [35m1[39m,
+    [34mnombrerol[39m: "[32mAdministrador[39m",
+    [34mdescripcionrol[39m: "[32mAcceso total al sistema[39m",
+    [34mestadorol[39m: [36mtrue[39m,
+  }
+

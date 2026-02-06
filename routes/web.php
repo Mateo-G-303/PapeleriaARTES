@@ -117,7 +117,7 @@ Route::middleware(['auth', 'role:Administrador'])->prefix('admin')->name('admin.
     Route::delete('roles/{id}', [RolController::class, 'destroy'])->name('roles.destroy');
     Route::patch('roles/{id}/toggle', [RolController::class, 'toggleStatus'])->name('roles.toggle');
 
-    // Configuraciones
+    // Configuraciones de Admin (sesión, bloqueo, IVA)
     Route::get('configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
     Route::put('configuraciones', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
 
@@ -133,10 +133,24 @@ Route::middleware(['auth', 'role:Administrador'])->prefix('admin')->name('admin.
 // Rutas de Ventas - Propietario y Empleado
 Route::middleware(['auth', 'session.timeout'])->group(function () {
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
+    
+    // Crear nueva venta
     Route::get('/ventas/create', [VentaController::class, 'create'])->name('ventas.create');
-    Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
-    Route::get('/ventas/{id}', [VentaController::class, 'show'])->name('ventas.show');
-    Route::get('/ventas/{id}/factura', [VentaController::class, 'generarFactura'])->name('ventas.factura');
-    Route::get('/ventas/{id}/factura/ver', [VentaController::class, 'verFactura'])->name('ventas.factura.ver');
+    
+    // Buscar producto por código de barras (AJAX)
     Route::post('/ventas/buscar-producto', [VentaController::class, 'buscarProducto'])->name('ventas.buscar-producto');
+    
+    // Confirmar venta y obtener resumen (AJAX)
+    Route::post('/ventas/confirmar', [VentaController::class, 'confirmarVenta'])->name('ventas.confirmar');
+    
+    // Guardar venta
+    Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
+    
+    // Ver detalle de venta
+    Route::get('/ventas/{id}', [VentaController::class, 'show'])->name('ventas.show');
+    
+    // Generar PDF de factura
+    Route::get('/ventas/{id}/pdf', [VentaController::class, 'generarPDF'])->name('ventas.pdf');
+
+    Route::get('/ventas/{id}/imprimir', [VentaController::class, 'imprimir'])->name('ventas.imprimir');
 });
