@@ -67,22 +67,22 @@ class Productos extends Component
     public function render()
     {
         $productos = Producto::with('categoria')
-        ->where('activopro', true)
-        ->when($this->search, function ($query) {
-            $query->where(function ($q) {
-                $q->where('codbarraspro', 'ILIKE', '%' . $this->search . '%')
-                  ->orWhere('nombrepro', 'ILIKE', '%' . $this->search . '%')
-                  ->orWhereHas('categoria', function ($c) {
-                      $c->where('nombrecat', 'ILIKE', '%' . $this->search . '%');
-                  });
-            });
-        })
-        ->orderBy('nombrepro')
-        ->paginate(1);
+            ->where('activopro', true)
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('codbarraspro', 'ILIKE', '%' . $this->search . '%')
+                        ->orWhere('nombrepro', 'ILIKE', '%' . $this->search . '%')
+                        ->orWhereHas('categoria', function ($c) {
+                            $c->where('nombrecat', 'ILIKE', '%' . $this->search . '%');
+                        });
+                });
+            })
+            ->orderBy('nombrepro')
+            ->paginate(1);
 
         $categorias = Categoria::where('activocat', true)
-        ->orderBy('nombrecat')
-        ->get();
+            ->orderBy('nombrecat')
+            ->get();
 
         return view('livewire.productos', compact('productos', 'categorias'));
     }
@@ -138,7 +138,7 @@ class Productos extends Component
                 'estadocatpro' => true,
                 'preciocomprapro' => $this->preciocomprapro,
                 'stockminpro' => $this->stockminpro,
-                'activopro' => true 
+                'activopro' => true
             ]
         );
 
@@ -157,7 +157,7 @@ class Productos extends Component
         if (!$producto->activopro) {
             return;
         }
-        
+
         $producto->activopro = false;
         $producto->stockpro  = 0;
         $producto->save();
@@ -180,42 +180,71 @@ class Productos extends Component
 
     public function exportarCSV()
     {
+        // 1. Ejecutamos el procedimiento almacenado
         $productos = DB::select('SELECT * FROM sp_exportar_todo_inventario()');
 
-        $fileName = 'inventario_completo_' . date('Y-m-d_H-i') . '.csv';
+        $fileName = 'inventario_valorizado_' . date('Y-m-d_H-i') . '.csv';
 
         return response()->streamDownload(function () use ($productos) {
             $handle = fopen('php://output', 'w');
 
+            // BOM para que Excel reconozca tildes y ñ correctamente
             fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
+            // 2. Encabezados actualizados
             fputcsv($handle, [
                 'ID',
                 'CÓDIGO BARRAS',
                 'PRODUCTO',
                 'CATEGORÍA',
                 'COSTO COMPRA',
+                'MARGEN (%)',
                 'PRECIO VENTA',
-                'PRECIO MÍNIMO',
-                'PRECIO MÁXIMO',
                 'STOCK ACTUAL',
-                'STOCK ALERTA'
+                'STOCK MÍNIMO',
+                'ESTADO',
+                'VALOR TOTAL ($)' // Nueva columna calculada
             ], ';');
 
+            $granTotalDinero = 0;
+            $totalItems = 0;
+
+            // 3. Recorremos los productos
             foreach ($productos as $row) {
+                // Sumamos para el reporte final
+                $granTotalDinero += $row->valor_total_producto;
+                $totalItems++;
+
                 fputcsv($handle, [
                     $row->id_producto,
                     $row->codigo,
                     $row->nombre,
                     $row->categoria,
                     $row->costo_compra,
+                    $row->margen_venta,
                     $row->precio_venta,
-                    $row->precio_min,
-                    $row->precio_max,
                     $row->stock_actual,
-                    $row->alerta_stock
+                    $row->stock_minimo,
+                    $row->estado,
+                    $row->valor_total_producto // Dato calculado en SQL
                 ], ';');
             }
+
+            // 4. (Opcional) Agregar una fila vacía y luego los totales al final
+            fputcsv($handle, [], ';'); // Fila vacía separadora
+            fputcsv($handle, [
+                '',
+                '',
+                'TOTALES GENERALES:',
+                '',
+                '',
+                '',
+                '',
+                $totalItems . ' Productos',
+                '',
+                '',
+                number_format($granTotalDinero, 2, '.', '') // Total de dinero invertido
+            ], ';');
 
             fclose($handle);
         }, $fileName);
