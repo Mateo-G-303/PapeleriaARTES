@@ -120,6 +120,7 @@ Route::middleware(['auth', 'role:Administrador'])->prefix('admin')->name('admin.
     // Configuraciones de Admin (sesión, bloqueo, IVA)
     Route::get('configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
     Route::put('configuraciones', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
+    Route::post('configuraciones/iva', [ConfiguracionController::class, 'actualizarIva'])->name('configuraciones.iva');
 
     //Auditoria y Logs
     Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
