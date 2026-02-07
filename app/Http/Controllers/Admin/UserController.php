@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Rol;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -24,14 +25,19 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // 1. Definimos las reglas y los mensajes personalizados
         $request->validate([
             'cedula' => 'required|max:10|unique:users',
             'name' => 'required|max:100',
             'email' => 'required|email|max:100|unique:users',
-            'password' => 'required|min:8',
-            'idrol' => 'required|exists:roles,idrol',
+            'password' => ['required', Password::defaults()],
+        ], [
+            'cedula.unique' => 'Esta cédula ya pertenece a otro usuario registrado.',
+            'email.unique' => 'Este correo electrónico ya está en uso.',
+            'idrol.required' => 'Debes seleccionar un rol para el usuario.',
         ]);
 
+        // 2. Si la validación pasa, creamos el usuario
         User::create([
             'cedula' => $request->cedula,
             'name' => $request->name,
@@ -41,6 +47,7 @@ class UserController extends Controller
             'intentos_fallidos' => 0,
         ]);
 
+        // 3. Redireccionamos con éxito
         return redirect()->route('admin.usuarios.index')->with('success', 'Usuario creado correctamente');
     }
 
@@ -54,11 +61,19 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $usuario = User::findOrFail($id);
-        
+
         $request->validate([
             'name' => 'required|max:100',
             'email' => 'required|email|max:100|unique:users,email,' . $id,
             'idrol' => 'required|exists:roles,idrol',
+            'password' => [
+                'nullable',
+                Password::defaults(),
+            ],
+        ], [
+            // Mensajes personalizados
+            'email.unique' => 'Este correo electrónico ya pertenece a otro usuario.',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
         ]);
 
         $datos = [
@@ -67,6 +82,7 @@ class UserController extends Controller
             'idrol' => $request->idrol,
         ];
 
+        // 2. Solo encriptamos y agregamos la contraseña si el campo fue llenado
         if ($request->filled('password')) {
             $datos['password'] = Hash::make($request->password);
         }
@@ -75,7 +91,6 @@ class UserController extends Controller
 
         return redirect()->route('admin.usuarios.index')->with('success', 'Usuario actualizado correctamente');
     }
-
     public function destroy($id)
     {
         $usuario = User::findOrFail($id);
