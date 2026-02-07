@@ -89,12 +89,23 @@
                     <p class="text-sm text-gray-500">Gestión de proveedores.</p>
                 </div>
                 </div>
+                {{-- DERECHA: BUSCADOR + BOTÓN --}}
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
 
-                <flux:button wire:click="abrirModal" variant="primary" icon="plus">
-                    Nuevo Proveedor
-                </flux:button>
+        <input
+            type="text"
+            wire:model.live="search"
+            placeholder="Buscar por RUC, nombre, teléfono o dirección"
+            class="w-full sm:w-72 px-4 py-2 border rounded-lg
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+        <flux:button wire:click="abrirModal" variant="primary" icon="plus">
+            Nuevo Proveedor
+        </flux:button>
+    </div>
+                
             </div>
-
+            
             <div class="overflow-x-auto border rounded-lg">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -103,6 +114,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Correo</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teléfono</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Dirección</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
                         </tr>
                     </thead>
@@ -113,6 +125,7 @@
                             <td class="px-6 py-4 text-sm font-bold text-gray-900">{{ $prov->nombreprov }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $prov->correoprov }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $prov->telefonoprov }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $prov->direccionprov}}</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-2">
                                     <flux:button size="sm" wire:click="editar({{ $prov->idprov }})">Editar</flux:button>
@@ -122,10 +135,14 @@
                         </tr>
                         @endforeach
                     </tbody>
+                    
                 </table>
             </div>
-
         </div>
+        <div class="mt-4">
+            {{ $proveedores->links() }}
+        </div>
+        
         @endif
     </div>
 </div>
