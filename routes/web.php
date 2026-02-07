@@ -109,11 +109,8 @@ Route::middleware(['auth', 'role:Administrador'])->prefix('admin')->name('admin.
     Route::get('configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
     Route::put('configuraciones', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
     Route::post('configuraciones/iva', [ConfiguracionController::class, 'actualizarIva'])->name('configuraciones.iva');
-<<<<<<< HEAD
-=======
     Route::get('configuraciones/backup', [ConfiguracionController::class, 'backupDatabase'])->name('configuraciones.backup');
     Route::get('configuraciones/exportar-datos', [ConfiguracionController::class, 'exportarDatosNegocio'])->name('configuraciones.exportar-datos');
->>>>>>> origin/dev
 
     // Auditoria y Logs
     Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
