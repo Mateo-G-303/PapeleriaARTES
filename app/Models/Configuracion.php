@@ -21,4 +21,17 @@ class Configuracion extends Model
         $config = self::where('clave', $clave)->first();
         return $config ? $config->valor : $default;
     }
+
+    public static function obtenerIva()
+    {
+        return (float) self::obtener('iva_porcentaje', 12.00);
+    }
+
+    public static function actualizarIva($valor)
+    {
+        return self::updateOrCreate(
+            ['clave' => 'iva_porcentaje'],
+            ['valor' => $valor, 'descripcion' => 'Porcentaje de IVA aplicado a ventas']
+        );
+    }
 }

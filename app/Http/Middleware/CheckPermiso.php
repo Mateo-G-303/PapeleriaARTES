@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\Log;
 
 class CheckPermiso
 {
@@ -19,6 +20,14 @@ class CheckPermiso
 
         // Verificar si el usuario tiene el permiso
         if (!$user->tienePermiso($permiso)) {
+            // --- AQUÍ REGISTRAMOS LA ANOMALÍA ANTES DE BLOQUEAR ---
+            \App\Models\Log::create([
+                'user_id' => $user->id,
+                'idnivel' => 1, // 1 = CRÍTICO
+                'mensajelogs' => "Intento de acceso no autorizado al permiso: [$permiso] en la ruta: " . $request->path(),
+                'fechalogs' => now(),
+            ]);
+
             abort(403, 'No tiene permisos para acceder a esta sección.');
         }
 
