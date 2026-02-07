@@ -18,8 +18,8 @@ class Compras extends Component
     public $idprov;
     public $idpro;
     public $cantidaddet;
-    public $costototal;          // 👈 NUEVO
-    public $preciounitario;      // 👈 CALCULADO
+    public $costototal;          // NUEVO
+    public $preciounitario;      // CALCULADO
 
     public $detalles = [];
     public $modal = false;
@@ -47,13 +47,21 @@ class Compras extends Component
 
     public function mount()
     {
-        $this->proveedores = Proveedor::all();
-        $this->productos   = Producto::all();
+        $this->proveedores = Proveedor::where('activoprov', true)
+        ->orderBy('nombreprov')
+        ->get();
+        $this->productos = Producto::where('activopro', true)
+        ->orderBy('nombrepro')
+        ->get();
 
     }
 
     public function abrirModal()
     {
+        $this->proveedores = Proveedor::where('activoprov', true)->get();
+        $this->productos   = Producto::where('activopro', true)->get();
+
+
         $this->search ='';
         $this->modal = true;
         $this->errorProveedor = null;
@@ -184,6 +192,7 @@ class Compras extends Component
                     'cantidaddet'         => $d['cantidaddet'],
                     'preciounitario'      => $d['preciounitario'],
                     'costototalpaquete'   => $d['costototalpaquete'],
+                    'margenaplicadodet'   => $d['margenventa'],
                 ]);
 
                 $producto = Producto::find($d['idpro']);

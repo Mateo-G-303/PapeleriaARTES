@@ -15,7 +15,8 @@ class DetalleCompra extends Model
         'idpro',
         'cantidaddet',
         'preciounitario',
-        'costototalpaquete'
+        'costototalpaquete',
+        'margenaplicadodet'
     ];
 
     public function compra()

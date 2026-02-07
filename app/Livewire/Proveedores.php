@@ -4,10 +4,10 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Proveedor;
+use Livewire\WithPagination;
 
 class Proveedores extends Component
 {
-    public $proveedores;
     public $modal = false;
 
     public $idprov;
@@ -16,6 +16,15 @@ class Proveedores extends Component
     public $correoprov;
     public $telefonoprov;
     public $direccionprov;
+    //Para buscar
+    public $search = '';
+    //Paginacion
+    use WithPagination;
+    protected $paginationTheme = 'tailwind';
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
 
     protected function rules()
     {
@@ -40,12 +49,24 @@ class Proveedores extends Component
 
     public function render()
     {
-        $this->proveedores = Proveedor::all();
-        return view('livewire.proveedores');
+         $proveedores = Proveedor::where('activoprov', true)
+         ->when($this->search, function ($query){
+                $query->where(function ($q) {
+                    $q->where('rucprov', 'ILIKE', '%' . $this->search . '%')
+                      ->orWhere('nombreprov', 'ILIKE', '%' . $this->search . '%')
+                      ->orWhere('telefonoprov', 'ILIKE', '%' . $this->search . '%')
+                      ->orWhere('direccionprov', 'ILIKE', '%' . $this->search . '%');
+                });
+            })
+            ->orderBy('nombreprov')
+            ->paginate(2);
+
+        return view('livewire.proveedores', compact('proveedores'));
     }
 
     public function abrirModal()
     {
+        $this->search ='';
         $this->modal = true;
     }
 
@@ -67,6 +88,7 @@ class Proveedores extends Component
                 'correoprov'    => $this->correoprov,
                 'telefonoprov'  => $this->telefonoprov,
                 'direccionprov' => $this->direccionprov,
+                'activoprov'    => true
             ]
         );
 
@@ -89,7 +111,14 @@ class Proveedores extends Component
 
     public function borrar($id)
     {
-        Proveedor::findOrFail($id)->delete();
+         $proveedor = Proveedor::findOrFail($id);
+
+        if (!$proveedor->activoprov) {
+            return;
+        }
+
+        $proveedor->activoprov = false;
+        $proveedor->save();
     }
 
     public function limpiarCampos()
