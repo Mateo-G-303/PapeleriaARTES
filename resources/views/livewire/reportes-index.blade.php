@@ -41,14 +41,22 @@
             </div>
 
         </a>
+{{-- REPORTE DE VENTAS --}}
+        <a href="{{ route('reportes.ventas') }}" class="block cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
+            <div class="bg-white p-4 rounded-xl shadow-[10px_12px_25px_rgba(0,0,0,0.28)] flex items-center gap-4">
+                <div style="width: 60px; height: 60px; background-color: #dbeafe; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">💰</div>
+                <div>
+                    <h2 class="font-bold text-lg">Reporte de Ventas</h2>
+                    <p class="text-sm text-gray-500">Análisis completo de ventas</p>
+                </div>
+            </div>
+        </a>
 
-        {{-- REPORTES FUTUROS (DESHABILITADOS) --}}
-        @for($i = 0; $i < 4; $i++)
-            <div
-            class="bg-gray-100 rounded-xl p-6 text-gray-400 cursor-not-allowed">
-
-            <h2 class="font-bold">Próximamente</h2>
-            <p class="text-sm">Nuevo reporte</p>
+        {{-- PRÓXIMAMENTE --}}
+        @for($i = 0; $i < 3; $i++)
+            <div class="bg-gray-100 rounded-xl p-6 text-gray-400 cursor-not-allowed">
+                <h2 class="font-bold">Próximamente</h2>
+                <p class="text-sm">Nuevo reporte</p>
             </div>
         @endfor
     <a
