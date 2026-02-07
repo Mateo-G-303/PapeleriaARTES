@@ -18,6 +18,7 @@ use App\Models\Rol;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Auth\Events\Logout;
 use App\Models\Log;
+use Illuminate\Validation\Rules\Password; // No olvides esta importación
 
 
 
@@ -64,6 +65,16 @@ class AppServiceProvider extends ServiceProvider
                     // Si falla el log, no interrumpimos la salida
                 }
             }
+        });
+
+        
+        // Configuramos las reglas por defecto para toda la Papelería ARTES
+        Password::defaults(function () {
+            return Password::min(8)
+                ->letters()
+                ->mixedCase()
+                ->numbers()
+                ->symbols();
         });
     }
 }
