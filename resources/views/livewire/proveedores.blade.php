@@ -28,7 +28,10 @@
                     </div>
 
                     <div class="col-span-12 md:col-span-6">
-                        <flux:input label="RUC" wire:model="rucprov" placeholder="Ej: 0999999999001" />
+                        <flux:input label="RUC" wire:model.blur="rucprov" placeholder="Ej: 0999999999001" maxlength="13" inputmode="numeric" pattern="[0-9]*" />
+                        @error('rucprov')
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="col-span-12 md:col-span-6">
