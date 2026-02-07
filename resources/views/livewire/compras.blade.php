@@ -309,11 +309,11 @@
                                     ${{ number_format($d->preciounitario, 2) }}
                                 </td>
                                 @php
-                                    $precioVenta = $d->preciounitario + ($d->preciounitario * ($d->producto->margenventa / 100));
+                                    $precioVenta = $d->preciounitario + ($d->preciounitario * ($d->margenaplicadodet / 100));
                                 @endphp
 
                                 <td class="px-4 py-2">
-                                    {{ number_format($d->producto->margenventa, 2) }} %
+                                    {{ number_format($d->margenaplicadodet, 2) }} %
                                 </td>
 
                                 <td class="px-4 py-2 text-green-600 font-semibold">

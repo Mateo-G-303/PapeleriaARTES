@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Producto;
 use App\Models\Categoria;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Productos extends Component
@@ -19,10 +20,20 @@ class Productos extends Component
     public $precioventapro;
     public $stockpro;
     public $preciocomprapro;
-    public $preciominpro;
-    public $preciomaxpro;
     public $stockminpro;
     public $margenventa = 50;
+
+    //Paginacion y buscador
+    use WithPagination;
+
+    protected $paginationTheme = 'tailwind';
+
+    public $search = '';
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
 
     protected $rules = [
         'codbarraspro' => 'required|max:13',
@@ -31,8 +42,6 @@ class Productos extends Component
         'precioventapro' => 'required|numeric',
         'stockpro' => 'required|integer',
         'preciocomprapro' => 'required|numeric',
-        'preciominpro' => 'required|numeric',
-        'preciomaxpro' => 'required|numeric',
         'stockminpro' => 'required|integer',
         'margenventa' => 'required|numeric|min:0',
     ];
@@ -57,8 +66,23 @@ class Productos extends Component
 
     public function render()
     {
-        $productos = Producto::all();
-        $categorias = Categoria::all();
+        $productos = Producto::with('categoria')
+            ->where('activopro', true)
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('codbarraspro', 'ILIKE', '%' . $this->search . '%')
+                        ->orWhere('nombrepro', 'ILIKE', '%' . $this->search . '%')
+                        ->orWhereHas('categoria', function ($c) {
+                            $c->where('nombrecat', 'ILIKE', '%' . $this->search . '%');
+                        });
+                });
+            })
+            ->orderBy('nombrepro')
+            ->paginate(1);
+
+        $categorias = Categoria::where('activocat', true)
+            ->orderBy('nombrecat')
+            ->get();
 
         return view('livewire.productos', compact('productos', 'categorias'));
     }
@@ -69,6 +93,7 @@ class Productos extends Component
             abort(403);
         }
         $this->limpiarCampos();
+        $this->search = '';
         $this->modal = true;
     }
 
@@ -86,8 +111,6 @@ class Productos extends Component
         $this->precioventapro = $producto->precioventapro;
         $this->stockpro = $producto->stockpro;
         $this->preciocomprapro = $producto->preciocomprapro;
-        $this->preciominpro = $producto->preciominpro;
-        $this->preciomaxpro = $producto->preciomaxpro;
         $this->stockminpro = $producto->stockminpro;
         $this->margenventa = $producto->margenventa;
 
@@ -111,12 +134,11 @@ class Productos extends Component
                 'idcat' => $this->idcat,
                 'precioventapro' => $this->precioventapro,
                 'stockpro' => $this->stockpro,
-                'preciominpro' => $this->preciominpro,
-                'preciomaxpro' => $this->preciomaxpro,
                 'margenventa' => $this->margenventa,
                 'estadocatpro' => true,
                 'preciocomprapro' => $this->preciocomprapro,
-                'stockminpro' => $this->stockminpro
+                'stockminpro' => $this->stockminpro,
+                'activopro' => true
             ]
         );
 
@@ -129,7 +151,16 @@ class Productos extends Component
         if (!auth()->user()->tienePermiso('productos.eliminar')) {
             abort(403);
         }
-        Producto::find($id)->delete();
+        //ELiminado Logico
+        $producto = Producto::findOrFail($id);
+
+        if (!$producto->activopro) {
+            return;
+        }
+
+        $producto->activopro = false;
+        $producto->stockpro  = 0;
+        $producto->save();
     }
 
     public function limpiarCampos()
@@ -141,8 +172,6 @@ class Productos extends Component
         $this->precioventapro = '';
         $this->stockpro = '';
         $this->preciocomprapro = '';
-        $this->preciominpro = '';
-        $this->preciomaxpro = '';
         $this->stockminpro = '';
         $this->margenventa = 50;
 
@@ -151,42 +180,71 @@ class Productos extends Component
 
     public function exportarCSV()
     {
+        // 1. Ejecutamos el procedimiento almacenado
         $productos = DB::select('SELECT * FROM sp_exportar_todo_inventario()');
 
-        $fileName = 'inventario_completo_' . date('Y-m-d_H-i') . '.csv';
+        $fileName = 'inventario_valorizado_' . date('Y-m-d_H-i') . '.csv';
 
         return response()->streamDownload(function () use ($productos) {
             $handle = fopen('php://output', 'w');
 
+            // BOM para que Excel reconozca tildes y ñ correctamente
             fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
+            // 2. Encabezados actualizados
             fputcsv($handle, [
                 'ID',
                 'CÓDIGO BARRAS',
                 'PRODUCTO',
                 'CATEGORÍA',
                 'COSTO COMPRA',
+                'MARGEN (%)',
                 'PRECIO VENTA',
-                'PRECIO MÍNIMO',
-                'PRECIO MÁXIMO',
                 'STOCK ACTUAL',
-                'STOCK ALERTA'
+                'STOCK MÍNIMO',
+                'ESTADO',
+                'VALOR TOTAL ($)' // Nueva columna calculada
             ], ';');
 
+            $granTotalDinero = 0;
+            $totalItems = 0;
+
+            // 3. Recorremos los productos
             foreach ($productos as $row) {
+                // Sumamos para el reporte final
+                $granTotalDinero += $row->valor_total_producto;
+                $totalItems++;
+
                 fputcsv($handle, [
                     $row->id_producto,
                     $row->codigo,
                     $row->nombre,
                     $row->categoria,
                     $row->costo_compra,
+                    $row->margen_venta,
                     $row->precio_venta,
-                    $row->precio_min,
-                    $row->precio_max,
                     $row->stock_actual,
-                    $row->alerta_stock
+                    $row->stock_minimo,
+                    $row->estado,
+                    $row->valor_total_producto // Dato calculado en SQL
                 ], ';');
             }
+
+            // 4. (Opcional) Agregar una fila vacía y luego los totales al final
+            fputcsv($handle, [], ';'); // Fila vacía separadora
+            fputcsv($handle, [
+                '',
+                '',
+                'TOTALES GENERALES:',
+                '',
+                '',
+                '',
+                '',
+                $totalItems . ' Productos',
+                '',
+                '',
+                number_format($granTotalDinero, 2, '.', '') // Total de dinero invertido
+            ], ';');
 
             fclose($handle);
         }, $fileName);

@@ -29,6 +29,17 @@ class ConfiguracionController extends Controller
         return redirect()->route('admin.configuraciones.index')->with('success', 'Configuración actualizada correctamente');
     }
 
+    public function actualizarIva(Request $request)
+    {
+        $request->validate([
+            'iva_porcentaje' => 'required|numeric|min:0|max:100',
+        ]);
+
+        Configuracion::actualizarIva($request->iva_porcentaje);
+
+        return redirect()->route('admin.configuraciones.index')->with('success', 'IVA actualizado correctamente');
+    }
+
     public function backupDatabase()
     {
         $filename = 'backup_artes_' . date('Y-m-d_H-i-s') . '.sql';

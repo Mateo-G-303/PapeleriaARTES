@@ -68,19 +68,6 @@
                             description="Porcentaje de ganancia sobre el costo de compra" />
                     </div>
 
-                    <div class="col-span-12 md:col-span-6 bg-green-50/30 p-4 rounded-lg border border-green-100">
-                        <flux:input label="Precio Venta Público ($)" wire:model="precioventapro" type="number" step="0.01" />
-                        <p class="text-xs text-green-500 mt-1 italic font-bold">Precio final cliente</p>
-                    </div>
-
-                    <div class="col-span-12 md:col-span-6">
-                        <flux:input label="Precio Mínimo (Oferta)" wire:model="preciominpro" type="number" step="0.01" />
-                    </div>
-                    <div class="col-span-12 md:col-span-6">
-                        <flux:input label="Precio Máximo (Referencia)" wire:model="preciomaxpro" type="number" step="0.01" />
-                    </div>
-
-
                     <div class="col-span-12 mt-4">
                         <h3 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-4 border-b border-indigo-100 pb-2">
                             3. Gestión de Inventario
@@ -134,6 +121,11 @@
                         <span wire:loading.remove wire:target="exportarCSV">Exportar Excel</span>
                         <span wire:loading wire:target="exportarCSV">Generando...</span>
                     </flux:button>
+                    <input
+                        type="text"
+                        wire:model.live="search"
+                        placeholder="Buscar por código, producto o cat"
+                        class="w-72 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
                     @if(Auth::user()->tienePermiso('productos.crear'))
                     <flux:button wire:click="crear" variant="primary" icon="plus">
                         Nuevo Producto
@@ -154,7 +146,6 @@
                                 Margen
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">P. Venta</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rango</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Stock</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
                         </tr>
@@ -183,10 +174,6 @@
                                 ${{ number_format($producto->precioventapro, 2) }}
                             </td>
 
-                            <td class="px-4 py-4 text-xs text-gray-500">
-                                ${{ number_format($producto->preciominpro, 0) }} - ${{ number_format($producto->preciomaxpro, 0) }}
-                            </td>
-
                             <td class="px-4 py-4 text-center">
                                 <span class="px-2 inline-flex text-xs font-semibold rounded-full {{ $producto->stockpro <= $producto->stockminpro ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
                                     {{ $producto->stockpro }}
@@ -210,6 +197,9 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div class="mt-4">
+            {{ $productos->links() }}
         </div>
         @endif
 
