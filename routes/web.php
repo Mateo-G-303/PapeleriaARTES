@@ -23,6 +23,8 @@ use App\Livewire\LogIndex;
 use App\Livewire\ReportesGraficos;
 use App\Models\Producto;
 use App\Models\Categoria;
+use App\Http\Controllers\ExportController;
+use App\Livewire\RCostosVentasGanancias;
 
 // ============================================
 // 1. PÁGINAS PÚBLICAS Y DASHBOARD
@@ -84,6 +86,11 @@ Route::middleware(['auth', 'verified', 'session.timeout', 'role:Administrador|Ve
     Route::get('/ventas/{id}', [VentaController::class, 'show'])->name('ventas.show')->where('id', '[0-9]+'); 
     Route::get('/ventas/{id}/pdf', [VentaController::class, 'generarPDF'])->name('ventas.pdf');
     Route::get('/ventas/{id}/imprimir', [VentaController::class, 'imprimir'])->name('ventas.imprimir');
+    Route::get('/reportes', ReportesIndex::class)->name('reportes.index');
+    Route::get('/reportes/compras', ReporteCompras::class)->name('reportes.compras');
+    Route::get('/reportes/comprasCategoria', RproductosCategoria::class)->name('reportes.productosCategoria');
+    Route::get('/reportes/costos-ventas-ganancias', RCostosVentasGanancias::class)
+    ->name('reportes.CostosVentasGanancias');
 });
 
 // ============================================

@@ -26,6 +26,19 @@
                 </div>
             </div>
         </a>
+        {{-- COSTOS, VENTAS Y GANANCIAS --}}
+        <a href="{{ route('reportes.CostosVentasGanancias') }}"
+           class="block cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
+            <div class="bg-white p-4 rounded-xl shadow-[10px_12px_25px_rgba(0,0,0,0.28)] flex items-center gap-4">
+                <div class="w-15 h-15 flex items-center justify-center bg-green-100 rounded-lg text-2xl">
+                    📊
+                </div>
+                <div>
+                    <h2 class="font-bold text-lg">Costos, Ventas y Ganancias</h2>
+                    <p class="text-sm text-gray-500">Resumen financiero mensual</p>
+                </div>
+            </div>
+        </a>
 
         {{-- EXPORTAR DATOS EXCEL --}}
         @if(Auth::user()->tienePermiso('configuraciones.ver'))
@@ -81,13 +94,6 @@
         </a>
         @endif
 
-        {{-- REPORTES FUTUROS (DESHABILITADOS) --}}
-        @for($i = 0; $i < 2; $i++)
-            <div class="bg-gray-100 rounded-xl p-6 text-gray-400 cursor-not-allowed">
-            <h2 class="font-bold">Próximamente</h2>
-            <p class="text-sm">Nuevo reporte</p>
-    </div>
-    @endfor
 
 </div>
 </div>
