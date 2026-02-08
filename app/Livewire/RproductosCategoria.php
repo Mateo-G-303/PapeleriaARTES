@@ -13,7 +13,7 @@ class RproductosCategoria extends Component
     public function mount()
     {
         $data = DB::select(
-            "SELECT * FROM dashboard.fn_productos_por_categoria()"
+            "SELECT * FROM public.fn_reporte_productos_categorias()"
         );
 
         $this->categorias = array_column($data, 'categoria');
