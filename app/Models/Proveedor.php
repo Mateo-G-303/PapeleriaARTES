@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Proveedor extends Model
 {
     public $timestamps = false;
+
     protected $table = 'proveedores';
     protected $primaryKey = 'idprov';
 
@@ -14,6 +15,13 @@ class Proveedor extends Model
         'rucprov',
         'nombreprov',
         'correoprov',
-        'telefonoprov'
+        'telefonoprov',
+        'direccionprov',
+        'activoprov'
     ];
+
+    public function compras()
+    {
+        return $this->hasMany(Compra::class, 'idprov', 'idprov');
+    }
 }

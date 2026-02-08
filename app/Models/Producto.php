@@ -14,13 +14,13 @@ class Producto extends Model
         'idcat',
         'codbarraspro',
         'nombrepro',
-        'preciominpro',
-        'preciomaxpro',
         'stockpro',
         'estadocatpro',
         'preciocomprapro',
         'precioventapro',
-        'stockminpro'
+        'stockminpro',
+        'margenventa',
+        'activopro' 
     ];
 
     protected $casts = [
@@ -28,7 +28,9 @@ class Producto extends Model
         'preciomaxpro' => 'decimal:2',
         'preciocomprapro' => 'decimal:2',
         'precioventapro' => 'decimal:2',
-        'estadocatpro' => 'boolean'
+        'margenventa' => 'decimal:2',
+        'estadocatpro' => 'boolean',
+        'activopro' => 'boolean'
     ];
 
     public function categoria()

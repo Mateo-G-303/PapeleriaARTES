@@ -33,10 +33,10 @@ class CreateNewUser implements CreatesNewUsers
 
         return User::create([
             'name' => $input['name'],
-            'cedula' => $input['cedula'], // <--- Agregado
+            'cedula' => $input['cedula'],
             'email' => $input['email'],
             'password' => $input['password'],
-            'idrol' => 1, // Asignamos rol de Admin por defecto
+            'idrol' => 1,
         ]);
     }
 }

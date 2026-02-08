@@ -20,9 +20,9 @@
                             <select class="form-select" id="idrol" name="idrol" required>
                                 <option value="">Seleccione un rol</option>
                                 @foreach($roles as $rol)
-                                    <option value="{{ $rol->idrol }}" {{ old('idrol') == $rol->idrol ? 'selected' : '' }}>
-                                        {{ $rol->nombrerol }}
-                                    </option>
+                                <option value="{{ $rol->idrol }}" {{ old('idrol') == $rol->idrol ? 'selected' : '' }}>
+                                    {{ $rol->nombrerol }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
@@ -39,8 +39,22 @@
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Contraseña *</label>
-                        <input type="password" class="form-control" id="password" name="password" required minlength="8">
-                        <small class="text-muted">Mínimo 8 caracteres</small>
+                        <div class="input-group">
+                            <input type="password"
+                                class="form-control @error('password') is-invalid @enderror"
+                                id="password_create"
+                                name="password"
+                                required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password_create', 'icon_create')">
+                                <i class="bi bi-eye" id="icon_create"></i>
+                            </button>
+                            @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        @if(!$errors->has('password'))
+                        <small class="text-muted">Requerido: 8+ caracteres, mayúsculas, minúsculas, números y símbolos.</small>
+                        @endif
                     </div>
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secondary">Cancelar</a>
@@ -52,3 +66,18 @@
     </div>
 </div>
 @endsection
+
+<script>
+    function togglePassword(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const eyeIcon = document.getElementById(iconId);
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+</script>

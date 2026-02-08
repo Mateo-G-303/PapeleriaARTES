@@ -13,6 +13,7 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Fortify;
 use App\Models\User;
 use App\Models\Configuracion;
+use App\Models\Log;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -26,7 +27,6 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
-        // Configurar vistas de Fortify (IMPORTANTE)
         Fortify::loginView(function () {
             return view('livewire.auth.login');
         });
@@ -55,7 +55,6 @@ class FortifyServiceProvider extends ServiceProvider
             return view('livewire.auth.two-factor-challenge');
         });
 
-        // Autenticación personalizada con bloqueo
         Fortify::authenticateUsing(function (Request $request) {
             $user = User::where('email', $request->email)->first();
 
@@ -64,8 +63,9 @@ class FortifyServiceProvider extends ServiceProvider
             }
 
             // Verificar si está bloqueado
-            if (method_exists($user, 'estaBloqueado') && $user->estaBloqueado()) {
-                $minutos = $user->minutosRestantesBloqueo();
+            if ($user->bloqueado_hasta && now()->lt($user->bloqueado_hasta)) {
+                $minutos = ceil(now()->diffInSeconds($user->bloqueado_hasta) / 60);
+
                 throw ValidationException::withMessages([
                     'email' => ["Su cuenta está bloqueada. Intente en {$minutos} minutos."],
                 ]);
@@ -73,19 +73,24 @@ class FortifyServiceProvider extends ServiceProvider
 
             // Verificar contraseña
             if (!Hash::check($request->password, $user->password)) {
-                // Incrementar intentos fallidos si el campo existe
                 if (isset($user->intentos_fallidos)) {
                     try {
                         $maxIntentos = (int) Configuracion::obtener('max_login_attempts', 5);
                     } catch (\Exception $e) {
                         $maxIntentos = 5;
                     }
-                    
+
                     $nuevoIntentos = $user->intentos_fallidos + 1;
                     $datos = ['intentos_fallidos' => $nuevoIntentos];
 
                     if ($nuevoIntentos >= $maxIntentos) {
                         $datos['bloqueado_hasta'] = now()->addMinutes(15);
+                        Log::create([
+                            'user_id' => $user->id,
+                            'idnivel' => 1,
+                            'mensajelogs' => "Cuenta bloqueada automáticamente por {$maxIntentos} intentos fallidos. IP: " . $request->ip(),
+                            'fechalogs' => now(),
+                        ]);
                     }
 
                     $user->update($datos);
@@ -97,6 +102,13 @@ class FortifyServiceProvider extends ServiceProvider
                         ]);
                     }
 
+                    Log::create([
+                        'user_id' => $user->id,
+                        'idnivel' => 2,
+                        'mensajelogs' => "Contraseña incorrecta para el usuario: {$user->email}. Intento {$nuevoIntentos} de {$maxIntentos}.",
+                        'fechalogs' => now(),
+                    ]);
+
                     throw ValidationException::withMessages([
                         'email' => ["Credenciales incorrectas. Intentos restantes: {$intentosRestantes}"],
                     ]);
@@ -105,7 +117,7 @@ class FortifyServiceProvider extends ServiceProvider
                 return null;
             }
 
-            // Login exitoso - resetear intentos si el campo existe
+            // Login exitoso
             if (isset($user->intentos_fallidos)) {
                 $user->update([
                     'intentos_fallidos' => 0,
@@ -113,11 +125,22 @@ class FortifyServiceProvider extends ServiceProvider
                 ]);
             }
 
+            try {
+                Log::create([
+                    'user_id' => $user->id,
+                    'idnivel' => 3,
+                    'mensajelogs' => 'Inicio de sesión exitoso. IP: ' . request()->ip(),
+                    'fechalogs' => now(),
+                ]);
+            } catch (\Exception $e) {
+                // Ignorar error de log
+            }
+
             return $user;
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = mb_strtolower($request->input(Fortify::username())).'|'.$request->ip();
+            $throttleKey = mb_strtolower($request->input(Fortify::username())) . '|' . $request->ip();
             return Limit::perMinute(5)->by($throttleKey);
         });
 
