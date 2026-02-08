@@ -23,7 +23,6 @@ use App\Livewire\LogIndex;
 use App\Livewire\ReportesGraficos;
 use App\Models\Producto;
 use App\Models\Categoria;
-use App\Http\Controllers\ExportController;
 use App\Livewire\RCostosVentasGanancias;
 
 // ============================================
