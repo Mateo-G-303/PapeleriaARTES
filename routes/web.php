@@ -70,7 +70,6 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
     Route::get('/categorias', App\Livewire\Categorias::class)->name('categorias');
     Route::get('/proveedores', Proveedores::class)->name('proveedores');
     Route::get('/compras', Compras::class)->name('compras');
-
     Route::get('/reportes', ReportesIndex::class)
         ->name('reportes.index');
 
@@ -82,9 +81,12 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
      Route::get('/reportes/ventas', ReporteVentas::class)
         ->name('reportes.ventas');
 
-    Route::get('/reportes', ReportesIndex::class)->name('reportes.index');
-    Route::get('/reportes/compras', ReporteCompras::class)->name('reportes.compras');
-    Route::get('/reportes/comprasCategoria', RproductosCategoria::class)->name('reportes.productosCategoria');
+    // HISTORIAL DE VENTAS (Solo ver, no crear)
+    // Importante: El Auditor debe poder ver las facturas pasadas.
+    Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
+    Route::get('/ventas/{id}', [VentaController::class, 'show'])->name('ventas.show')->where('id', '[0-9]+');;
+    Route::get('/ventas/{id}/pdf', [VentaController::class, 'generarPDF'])->name('ventas.pdf');
+    Route::get('/ventas/{id}/imprimir', [VentaController::class, 'imprimir'])->name('ventas.imprimir');
 });
 
 // ============================================
