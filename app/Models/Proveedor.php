@@ -16,7 +16,8 @@ class Proveedor extends Model
         'nombreprov',
         'correoprov',
         'telefonoprov',
-        'direccionprov'
+        'direccionprov',
+        'activoprov'
     ];
 
     public function compras()

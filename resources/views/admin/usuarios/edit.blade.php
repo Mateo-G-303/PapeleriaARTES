@@ -20,9 +20,9 @@
                             <label for="idrol" class="form-label">Rol *</label>
                             <select class="form-select" id="idrol" name="idrol" required>
                                 @foreach($roles as $rol)
-                                    <option value="{{ $rol->idrol }}" {{ $usuario->idrol == $rol->idrol ? 'selected' : '' }}>
-                                        {{ $rol->nombrerol }}
-                                    </option>
+                                <option value="{{ $rol->idrol }}" {{ $usuario->idrol == $rol->idrol ? 'selected' : '' }}>
+                                    {{ $rol->nombrerol }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
@@ -38,9 +38,22 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Nueva Contraseña</label>
-                        <input type="password" class="form-control" id="password" name="password" minlength="8">
-                        <small class="text-muted">Dejar vacío para mantener la actual</small>
+                        <label for="password" class="form-label">Nueva Contraseña (Opcional)</label>
+                        <div class="input-group">
+                            <input type="password"
+                                class="form-control @error('password') is-invalid @enderror"
+                                id="password_edit"
+                                name="password">
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password_edit', 'icon_edit')">
+                                <i class="bi bi-eye" id="icon_edit"></i>
+                            </button>
+                            @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        @if(!$errors->has('password'))
+                        <small class="text-muted">Dejar vacío para mantener la actual. Si se cambia, debe cumplir los requisitos de seguridad.</small>
+                        @endif
                     </div>
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.usuarios.index') }}" class="btn btn-secondary">Cancelar</a>
@@ -52,3 +65,18 @@
     </div>
 </div>
 @endsection
+
+<script>
+    function togglePassword(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const eyeIcon = document.getElementById(iconId);
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+</script>

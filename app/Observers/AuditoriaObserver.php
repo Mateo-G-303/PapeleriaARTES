@@ -25,15 +25,27 @@ class AuditoriaObserver
 
     protected function registrarAuditoria($accion, $model)
     {
-        // Evitamos auditar la propia tabla de auditoría para no crear un bucle infinito
         if ($model->getTable() === 'auditoria') return;
 
-        DB::table('auditoria')->insert([
-            'user_id'      => Auth::id(),              // <--- CAMBIO AQUÍ (Usando la Facade)      
-            'accionaud'    => $accion,
-            'tablaaud'     => $model->getTable(),      // Tu columna tablaaud (detecta nombre automático)
-            'fechahoraaud' => now(),                   // Tu columna fechahoraaud
-            // Si quieres guardar el dato viejo/nuevo en un futuro, podrías agregarlo aquí
-        ]);
+        $usuarioId = Auth::id();
+
+        // Intentamos el registro normal
+        try {
+            DB::table('auditoria')->insert([
+                'user_id'      => $usuarioId,
+                'accionaud'    => $accion,
+                'tablaaud'     => $model->getTable(),
+                'fechahoraaud' => now(),
+            ]);
+        } catch (\Exception $e) {
+            // Si falla (por ejemplo, por la paradoja de borrar tu propia cuenta)
+            // registramos el evento sin el ID para no romper la transacción
+            DB::table('auditoria')->insert([
+                'user_id'      => null,
+                'accionaud'    => $accion . " (Autogestionado)",
+                'tablaaud'     => $model->getTable(),
+                'fechahoraaud' => now(),
+            ]);
+        }
     }
 }

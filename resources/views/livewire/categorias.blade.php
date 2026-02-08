@@ -69,16 +69,28 @@
         @else
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
 
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Categorías</h2>
-                    <p class="text-sm text-gray-500">Organización de tu inventario.</p>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+            {{-- IZQUIERDA: TÍTULO --}}
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">Categorías</h2>
+                <p class="text-sm text-gray-500">Organización de tu inventario.</p>
+            </div>
+
+            {{-- DERECHA: BUSCADOR + BOTÓN --}}
+                <div class="flex items-center gap-3">
+                    <input
+                        type="text"
+                        wire:model.live="search"
+                        placeholder="Buscar por nombre de categoría"
+                        class="w-64 px-4 py-2 border rounded-lg">
+
+                    @if(Auth::user()->tienePermiso('categorias.crear'))
+                        <flux:button wire:click="crear" variant="primary" icon="plus">
+                            Nueva Categoría
+                        </flux:button>
+                    @endif
                 </div>
-                @if(Auth::user()->tienePermiso('categorias.crear'))
-                <flux:button wire:click="crear" variant="primary" icon="plus">
-                    Nueva Categoría
-                </flux:button>
-                @endif
             </div>
 
             <div class="overflow-x-auto border rounded-lg">
@@ -119,8 +131,11 @@
                     </tbody>
                 </table>
             </div>
-
+        </div>
+        <div class="mt-4">
+            {{ $categorias->links() }}
         </div>
         @endif
     </div>
+    
 </div>

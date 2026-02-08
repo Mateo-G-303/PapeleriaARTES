@@ -1,79 +1,42 @@
 <?php
 
-namespace App\Models;
+namespace App\Actions\Fortify;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
-use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\User;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Laravel\Fortify\Contracts\CreatesNewUsers;
 
-class User extends Authenticatable
+class CreateNewUser implements CreatesNewUsers
 {
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use PasswordValidationRules;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'cedula',
-        'idrol',
-        'intentos_fallidos',
-        'bloqueado_hasta',
-    ];
-
-    protected $hidden = [
-        'password',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
-        'remember_token',
-    ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'bloqueado_hasta' => 'datetime',
-    ];
-
-    public function initials(): string
+    /**
+     * Validate and create a newly registered user.
+     *
+     * @param  array<string, string>  $input
+     */
+    public function create(array $input): User
     {
-        return Str::of($this->name)
-            ->explode(' ')
-            ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
-            ->implode('');
-    }
+        Validator::make($input, [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique(User::class),
+            ],
+            'password' => $this->passwordRules(),
+            'cedula' => ['required', 'string', 'max:10', 'unique:users'],
+        ])->validate();
 
-    public function rol()
-    {
-        return $this->belongsTo(Rol::class, 'idrol', 'idrol');
+        return User::create([
+            'name' => $input['name'],
+            'cedula' => $input['cedula'],
+            'email' => $input['email'],
+            'password' => $input['password'],
+            'idrol' => 1,
+        ]);
     }
-
-    public function estaBloqueado()
-    {
-        if ($this->bloqueado_hasta && $this->bloqueado_hasta > now()) {
-            return true;
-        }
-        return false;
-    }
-
-    public function minutosRestantesBloqueo()
-    {
-        if ($this->bloqueado_hasta) {
-            return now()->diffInMinutes($this->bloqueado_hasta, false);
-        }
-        return 0;
-    }
-
-public function tienePermiso(string $permiso): bool
-{
-    if (!$this->rol) {
-        return false;
-    }
-    
-    return $this->rol->permisos()
-        ->where('nombreper', $permiso)
-        ->exists();
-}
-
 }

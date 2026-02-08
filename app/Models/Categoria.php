@@ -15,5 +15,5 @@ class Categoria extends Model
     // 3. Desactivamos timestamps (Laravel busca created_at por defecto, tú no los tienes)
     public $timestamps = false;
 
-    protected $fillable = ['nombrecat', 'descripcioncat'];
+    protected $fillable = ['nombrecat', 'descripcioncat', 'activocat'];
 }
