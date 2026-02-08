@@ -75,7 +75,7 @@ class Proveedores extends Component
                 });
             })
             ->orderBy('nombreprov')
-            ->paginate(2);
+            ->paginate(7);
 
         return view('livewire.proveedores', compact('proveedores'));
     }

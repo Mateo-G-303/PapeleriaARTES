@@ -78,7 +78,7 @@ class Productos extends Component
                 });
             })
             ->orderBy('nombrepro')
-            ->paginate(1);
+            ->paginate(10);
 
         $categorias = Categoria::where('activocat', true)
             ->orderBy('nombrecat')

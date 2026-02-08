@@ -37,7 +37,7 @@ class Categorias extends Component
                 $query->where('nombrecat', 'ILIKE', '%' . $this->search . '%');
             })
             ->orderBy('nombrecat')
-            ->paginate(2);
+            ->paginate(7);
 
         return view('livewire.categorias', compact('categorias'));
     }
