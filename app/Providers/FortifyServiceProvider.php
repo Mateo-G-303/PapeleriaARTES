@@ -27,7 +27,6 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
-        // Configurar vistas de Fortify (IMPORTANTE)
         Fortify::loginView(function () {
             return view('livewire.auth.login');
         });
@@ -56,7 +55,6 @@ class FortifyServiceProvider extends ServiceProvider
             return view('livewire.auth.two-factor-challenge');
         });
 
-        // Autenticación personalizada con bloqueo
         Fortify::authenticateUsing(function (Request $request) {
             $user = User::where('email', $request->email)->first();
 
@@ -66,20 +64,15 @@ class FortifyServiceProvider extends ServiceProvider
 
             // Verificar si está bloqueado
             if ($user->bloqueado_hasta && now()->lt($user->bloqueado_hasta)) {
+                $minutos = ceil(now()->diffInSeconds($user->bloqueado_hasta) / 60);
 
-    $minutos = ceil(
-        now()->diffInSeconds($user->bloqueado_hasta) / 60
-    );
-
-    throw ValidationException::withMessages([
-        'email' => ["Su cuenta está bloqueada. Intente en {$minutos} minutos."],
-    ]);
-}
-
+                throw ValidationException::withMessages([
+                    'email' => ["Su cuenta está bloqueada. Intente en {$minutos} minutos."],
+                ]);
+            }
 
             // Verificar contraseña
             if (!Hash::check($request->password, $user->password)) {
-                // Incrementar intentos fallidos si el campo existe
                 if (isset($user->intentos_fallidos)) {
                     try {
                         $maxIntentos = (int) Configuracion::obtener('max_login_attempts', 5);
@@ -92,10 +85,9 @@ class FortifyServiceProvider extends ServiceProvider
 
                     if ($nuevoIntentos >= $maxIntentos) {
                         $datos['bloqueado_hasta'] = now()->addMinutes(15);
-                        // --- AGREGAR AQUÍ ---
-                        \App\Models\Log::create([
+                        Log::create([
                             'user_id' => $user->id,
-                            'idnivel' => 1, // CRÍTICO
+                            'idnivel' => 1,
                             'mensajelogs' => "Cuenta bloqueada automáticamente por {$maxIntentos} intentos fallidos. IP: " . $request->ip(),
                             'fechalogs' => now(),
                         ]);
@@ -110,10 +102,9 @@ class FortifyServiceProvider extends ServiceProvider
                         ]);
                     }
 
-                    // --- AGREGAR AQUÍ ---
-                    \App\Models\Log::create([
+                    Log::create([
                         'user_id' => $user->id,
-                        'idnivel' => 2, // ADVERTENCIA
+                        'idnivel' => 2,
                         'mensajelogs' => "Contraseña incorrecta para el usuario: {$user->email}. Intento {$nuevoIntentos} de {$maxIntentos}.",
                         'fechalogs' => now(),
                     ]);
@@ -126,24 +117,23 @@ class FortifyServiceProvider extends ServiceProvider
                 return null;
             }
 
-            // Login exitoso - resetear intentos si el campo existe
+            // Login exitoso
             if (isset($user->intentos_fallidos)) {
                 $user->update([
                     'intentos_fallidos' => 0,
                     'bloqueado_hasta' => null
                 ]);
             }
-            // --- AGREGAR LOG DE INICIO DE SESIÓN ---
+
             try {
-                \App\Models\Log::create([
+                Log::create([
                     'user_id' => $user->id,
-                    'idnivel' => 3, // Nivel 3: INFORMATIVO (Azul en tus gráficas)
+                    'idnivel' => 3,
                     'mensajelogs' => 'Inicio de sesión exitoso. IP: ' . request()->ip(),
                     'fechalogs' => now(),
                 ]);
             } catch (\Exception $e) {
-                // Opcional: Si falla el log, no queremos bloquear al usuario, solo ignoramos el error
-                // o lo guardamos en el log de Laravel por si acaso.
+                // Ignorar error de log
             }
 
             return $user;

@@ -18,12 +18,17 @@ class CheckRole
         $user = Auth::user();
         $userRole = $user->rol->nombrerol ?? null;
 
-        if ($userRole !== $role) {
+        // 1. Separamos los roles permitidos (ej: "Administrador|Vendedor" se vuelve un arreglo)
+        $rolesPermitidos = explode('|', $role);
+
+        // 2. Verificamos si el rol del usuario NO está dentro de los permitidos
+        if (!in_array($userRole, $rolesPermitidos)) {
+
             // --- REGISTRAMOS LA ANOMALÍA POR ROL ---
             \App\Models\Log::create([
                 'user_id' => $user->id,
                 'idnivel' => 1, // CRÍTICO
-                'mensajelogs' => "Fallo de Rol: Usuario con rol [$userRole] intentó acceder a zona reservada para [$role]. Ruta: " . $request->path(),
+                'mensajelogs' => "Fallo de Rol: Usuario con rol [" . ($userRole ?? 'Ninguno') . "] intentó acceder a zona reservada para [" . implode(', ', $rolesPermitidos) . "]. Ruta: " . $request->path(),
                 'fechalogs' => now(),
             ]);
 

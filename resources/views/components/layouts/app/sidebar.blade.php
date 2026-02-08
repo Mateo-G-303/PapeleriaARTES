@@ -78,17 +78,16 @@
         </flux:navlist.item>
         @endif
 
-        @if(in_array(Auth::user()->rol->nombrerol, ['Administrador', 'Auditor']))
-
-        {{-- Ambos ven Auditoría y Logs --}}
+        @if(Auth::user()->tienePermiso('auditoria.ver'))
         <flux:navlist.item icon="clipboard-document-list" href="{{ route('admin.auditoria') }}" :current="request()->routeIs('admin.auditoria')">
             Auditoría
         </flux:navlist.item>
+        @endif
 
+        @if(Auth::user()->tienePermiso('logs.ver'))
         <flux:navlist.item icon="shield-exclamation" href="{{ route('admin.logs') }}" :current="request()->routeIs('admin.logs')">
             Seguridad y Logs
         </flux:navlist.item>
-
         @endif
 
         <flux:spacer />
