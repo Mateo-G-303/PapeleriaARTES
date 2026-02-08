@@ -18,7 +18,8 @@ use App\Livewire\AuditoriaIndex;
 use App\Livewire\ReporteCompras;
 use App\Livewire\ReportesIndex;
 use App\Livewire\RproductosCategoria;
-use App\Livewire\LogIndex;
+use App\Livewire\ReporteVentas;
+use App\Livewire\LogIndex; // <--- Añade esta línea
 use App\Livewire\ReportesGraficos;
 
 // Página de inicio
@@ -69,6 +70,17 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
     Route::get('/categorias', App\Livewire\Categorias::class)->name('categorias');
     Route::get('/proveedores', Proveedores::class)->name('proveedores');
     Route::get('/compras', Compras::class)->name('compras');
+
+    Route::get('/reportes', ReportesIndex::class)
+        ->name('reportes.index');
+
+    Route::get('/reportes/compras', ReporteCompras::class)
+        ->name('reportes.compras');
+
+    Route::get('/reportes/comprasCategoria', RproductosCategoria::class)
+        ->name('reportes.productosCategoria');
+     Route::get('/reportes/ventas', ReporteVentas::class)
+        ->name('reportes.ventas');
 
     Route::get('/reportes', ReportesIndex::class)->name('reportes.index');
     Route::get('/reportes/compras', ReporteCompras::class)->name('reportes.compras');
