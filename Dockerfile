@@ -1,35 +1,27 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-# Dependencias del sistema (INCLUYE PostgreSQL dev)
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libzip-dev \
-    libpq-dev \
-    zip \
-    unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd zip pdo pdo_pgsql bcmath \
-    && apt-get clean \
+    git unzip zip curl \
+    libpng-dev libzip-dev libpq-dev libsodium-dev \
+    && docker-php-ext-install pdo pdo_pgsql bcmath zip gd sodium \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*
 
-# Apache rewrite (Laravel)
-RUN a2enmod rewrite
+WORKDIR /app
 
-WORKDIR /var/www/html
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 COPY . .
 
-# Permisos Laravel
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+    && mkdir -p storage/logs \
+    && mkdir -p bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Composer (oficial)
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+EXPOSE 8000
 
-EXPOSE 80
-CMD ["apache2-foreground"]
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
