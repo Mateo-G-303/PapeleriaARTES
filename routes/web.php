@@ -69,10 +69,8 @@ Route::middleware(['auth', 'verified', 'session.timeout', 'role:Administrador|Em
     Route::get('/categorias', App\Livewire\Categorias::class)->name('categorias');
     Route::get('/proveedores', Proveedores::class)->name('proveedores');
 
-<<<<<<< HEAD
     // Compras y Reportes Básicos
     Route::get('/compras', Compras::class)->name('compras');
-=======
     Route::get('/reportes', ReportesIndex::class)
         ->name('reportes.index');
 
@@ -84,7 +82,6 @@ Route::middleware(['auth', 'verified', 'session.timeout', 'role:Administrador|Em
      Route::get('/reportes/ventas', ReporteVentas::class)
         ->name('reportes.ventas');
 
->>>>>>> 535e57794611cfe9b81b0a2221a8b9ab26554dc5
     Route::get('/reportes', ReportesIndex::class)->name('reportes.index');
     Route::get('/reportes/compras', ReporteCompras::class)->name('reportes.compras');
     Route::get('/reportes/comprasCategoria', RproductosCategoria::class)->name('reportes.productosCategoria');
