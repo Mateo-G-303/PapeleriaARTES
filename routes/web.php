@@ -82,10 +82,6 @@ Route::middleware(['auth', 'verified', 'session.timeout', 'role:Administrador|Em
      Route::get('/reportes/ventas', ReporteVentas::class)
         ->name('reportes.ventas');
 
-    Route::get('/reportes', ReportesIndex::class)->name('reportes.index');
-    Route::get('/reportes/compras', ReporteCompras::class)->name('reportes.compras');
-    Route::get('/reportes/comprasCategoria', RproductosCategoria::class)->name('reportes.productosCategoria');
-
     // HISTORIAL DE VENTAS (Solo ver, no crear)
     // Importante: El Auditor debe poder ver las facturas pasadas.
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');

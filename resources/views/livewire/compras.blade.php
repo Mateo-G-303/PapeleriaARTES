@@ -6,6 +6,7 @@
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-xl border border-gray-100 transition-all duration-300">
 
             {{-- HEADER --}}
+
             <div class="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-white">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900 tracking-tight">
@@ -22,6 +23,7 @@
                     </svg>
                 </button>
             </div>
+
 
             {{-- BODY --}}
             <div class="p-8">
@@ -44,7 +46,7 @@
                             @endforeach
                         </select>
                         @error('idprov')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="col-span-12 md:col-span-6">
@@ -56,7 +58,7 @@
                             @endforeach
                         </select>
                         @error('idpro')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
 
@@ -75,9 +77,9 @@
                             wire:model="costototal"
                             class="w-full rounded-lg border border-gray-400 bg-white
            focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                            @error('costototal')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
-                        @enderror  
+                        @error('costototal')
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
 
 
@@ -90,7 +92,7 @@
                             class="w-full rounded-lg border border-gray-400 bg-white
            focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         @error('cantidaddet')
-                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class=" col-span-12 md:col-span-4">
@@ -104,9 +106,9 @@
                             wire:model="margen"
                             class="w-full rounded-lg border border-gray-400 bg-white
            focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                    @error('margen')
+                        @error('margen')
                         <span class="text-red-600 text-sm">{{ $message }}</span>
-                    @enderror
+                        @enderror
                     </div>
 
                     <div class=" col-span-12">
@@ -212,25 +214,26 @@
                     <img src="{{ asset('img/dinero.svg') }}"
                         alt="Compras"
                         class="w-14 h-14">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Compras</h2>
-                    <p class="text-sm text-gray-500">Registro de compras a proveedores.</p>
-                </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Compras</h2>
+                        <p class="text-sm text-gray-500">Registro de compras a proveedores.</p>
+                    </div>
                 </div>
                 <div class="flex items-center gap-3">
                     <input
                         type="text"
                         wire:model.live="search"
                         placeholder="Buscar por código, proveedor o fecha"
-                        class="border rounded px-3 py-2 w-80"
-                    >
-
+                        class="border rounded px-3 py-2 w-80">
+                    
+                    @if(Auth::user()->tienePermiso('compras.crear'))
                     <flux:button wire:click="abrirModal" variant="primary" icon="plus">
                         Nueva Compra
                     </flux:button>
+                    @endif
                 </div>
-                
-                
+
+
             </div>
 
             <div class="overflow-x-auto border rounded-lg">
@@ -260,22 +263,21 @@
                                     <img
                                         src="{{ asset('img/Eye.svg') }}"
                                         alt="Ver productos"
-                                        class="w-6 h-6"
-                                    >
+                                        class="w-6 h-6">
                                 </button>
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
-                
+
             </div>
-            
-            
+
+
 
         </div>
         <div class="mt-4">
-        {{ $compras->links() }}
+            {{ $compras->links() }}
         </div>
         @endif
         @if($modalDetalle)
@@ -324,7 +326,7 @@
                                     ${{ number_format($d->preciounitario, 2) }}
                                 </td>
                                 @php
-                                    $precioVenta = $d->preciounitario + ($d->preciounitario * ($d->margenaplicadodet / 100));
+                                $precioVenta = $d->preciounitario + ($d->preciounitario * ($d->margenaplicadodet / 100));
                                 @endphp
 
                                 <td class="px-4 py-2">
@@ -365,5 +367,5 @@
         @endif
 
     </div>
-    
+
 </div>

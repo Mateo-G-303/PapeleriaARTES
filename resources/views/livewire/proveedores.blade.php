@@ -102,9 +102,11 @@
             class="w-full sm:w-72 px-4 py-2 border rounded-lg
                    focus:outline-none focus:ring-2 focus:ring-indigo-500">
 
+        @if(Auth::user()->tienePermiso('proveedores.crear'))
         <flux:button wire:click="abrirModal" variant="primary" icon="plus">
             Nuevo Proveedor
         </flux:button>
+        @endif
     </div>
                 
             </div>
@@ -131,8 +133,12 @@
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $prov->direccionprov}}</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-2">
+                                    @if(Auth::user()->tienePermiso('proveedores.editar'))
                                     <flux:button size="sm" wire:click="editar({{ $prov->idprov }})">Editar</flux:button>
+                                    @endif
+                                    @if(Auth::user()->tienePermiso('proveedores.eliminar'))
                                     <flux:button size="sm" variant="danger" wire:click="borrar({{ $prov->idprov }})" wire:confirm="¿Seguro que deseas eliminar este proveedor?">Borrar</flux:button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
