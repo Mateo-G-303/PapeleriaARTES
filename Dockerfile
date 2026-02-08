@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Dependencias del sistema
+# Dependencias del sistema (INCLUYE PostgreSQL dev)
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     libzip-dev \
+    libpq-dev \
     zip \
     unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -15,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Habilitar mod_rewrite (Laravel lo necesita)
+# Apache rewrite (Laravel)
 RUN a2enmod rewrite
 
 WORKDIR /var/www/html
@@ -26,10 +27,11 @@ COPY . .
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Instalar Composer
+# Composer (oficial)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --optimize-autoloader
 
 EXPOSE 80
 CMD ["apache2-foreground"]
+
