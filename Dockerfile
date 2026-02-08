@@ -5,7 +5,7 @@ FROM node:18 AS nodebuilder
 
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 RUN npm run build
 
