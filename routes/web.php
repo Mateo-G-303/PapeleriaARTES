@@ -15,7 +15,7 @@ use App\Http\Controllers\ReporteComprasController;
 use App\Http\Controllers\ReporteDashboardController;
 use App\Http\Controllers\VentaController;
 use App\Livewire\Compras;
-use App\Livewire\AuditoriaIndex; // <-- No olvides importar esto arriba
+use App\Livewire\AuditoriaIndex;
 use App\Livewire\ReporteCompras;
 use App\Livewire\ReportesIndex;
 use App\Livewire\RproductosCategoria;
@@ -34,24 +34,17 @@ use App\Models\Producto;
 use App\Models\Categoria;
 
 Route::get('/dashboard', function () {
-    // 1. Contar Productos Totales
     $totalProductos = Producto::count();
-
-    // 2. Contar Categorías
     $totalCategorias = Categoria::count();
-
-    // 3. Contar Productos con Stock Bajo (Menos de 10 unidades)
     $bajoStock = Producto::where('stockpro', '<=', 10)->count();
-
-    // 4. Obtener la lista de esos productos urgentes para la tabla
     $listaUrgente = Producto::where('stockpro', '<=', 10)
-        ->with('categoria') // Traemos la categoría para mostrarla
-        ->take(5) // Solo mostramos los 5 primeros
+        ->with('categoria')
+        ->take(5)
         ->get();
 
     return view('dashboard', compact('totalProductos', 'totalCategorias', 'bajoStock', 'listaUrgente'));
 })->name('dashboard')
-    ->middleware(['auth', 'verified']); // Aseguramos que esté protegido
+    ->middleware(['auth', 'verified']);
 
 // Rutas de configuración de usuario
 Route::middleware(['auth'])->group(function () {
@@ -91,6 +84,9 @@ Route::middleware(['auth', 'verified', 'session.timeout'])->group(function () {
      Route::get('/reportes/ventas', ReporteVentas::class)
         ->name('reportes.ventas');
 
+    Route::get('/reportes', ReportesIndex::class)->name('reportes.index');
+    Route::get('/reportes/compras', ReporteCompras::class)->name('reportes.compras');
+    Route::get('/reportes/comprasCategoria', RproductosCategoria::class)->name('reportes.productosCategoria');
 });
 
 // ============================================
@@ -121,41 +117,29 @@ Route::middleware(['auth', 'role:Administrador'])->prefix('admin')->name('admin.
     Route::delete('roles/{id}', [RolController::class, 'destroy'])->name('roles.destroy');
     Route::patch('roles/{id}/toggle', [RolController::class, 'toggleStatus'])->name('roles.toggle');
 
-    // Configuraciones de Admin (sesión, bloqueo, IVA)
+    // Configuraciones de Admin (sesión, bloqueo, IVA, backups)
     Route::get('configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
     Route::put('configuraciones', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
     Route::post('configuraciones/iva', [ConfiguracionController::class, 'actualizarIva'])->name('configuraciones.iva');
+    Route::get('configuraciones/backup', [ConfiguracionController::class, 'backupDatabase'])->name('configuraciones.backup');
+    Route::get('configuraciones/exportar-datos', [ConfiguracionController::class, 'exportarDatosNegocio'])->name('configuraciones.exportar-datos');
 
-    //Auditoria y Logs
+    // Auditoria y Logs
     Route::get('/auditoria', AuditoriaIndex::class)->name('auditoria');
     Route::get('/logs', LogIndex::class)->name('logs');
-    Route::get('/reportes/seguridad', \App\Livewire\ReportesGraficos::class)
-        ->name('reportes.seguridad');
+    Route::get('/reportes/seguridad', ReportesGraficos::class)->name('reportes.seguridad');
     Route::get('/exportar/logs', [ExportController::class, 'exportarLogs'])->name('exportar.logs');
     Route::get('/exportar/auditoria', [ExportController::class, 'exportarAuditoria'])->name('exportar.auditoria');
 });
 
-// Rutas de Ventas - Propietario y Empleado
+// Rutas de Ventas
 Route::middleware(['auth', 'session.timeout'])->group(function () {
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
-    
-    // Crear nueva venta
     Route::get('/ventas/create', [VentaController::class, 'create'])->name('ventas.create');
-    
-    // Buscar producto por código de barras (AJAX)
     Route::post('/ventas/buscar-producto', [VentaController::class, 'buscarProducto'])->name('ventas.buscar-producto');
-    
-    // Confirmar venta y obtener resumen (AJAX)
     Route::post('/ventas/confirmar', [VentaController::class, 'confirmarVenta'])->name('ventas.confirmar');
-    
-    // Guardar venta
     Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
-    
-    // Ver detalle de venta
     Route::get('/ventas/{id}', [VentaController::class, 'show'])->name('ventas.show');
-    
-    // Generar PDF de factura
     Route::get('/ventas/{id}/pdf', [VentaController::class, 'generarPDF'])->name('ventas.pdf');
-
     Route::get('/ventas/{id}/imprimir', [VentaController::class, 'imprimir'])->name('ventas.imprimir');
 });

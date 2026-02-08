@@ -58,7 +58,7 @@
         {{-- Tabla de ventas --}}
         <div style="background-color: white; border: 2px solid #e5e7eb; border-radius: 0.75rem; overflow: hidden;" class="dark:bg-zinc-800 dark:border-zinc-600">
             <div style="background-color: #7c3aed; color: white; padding: 0.75rem 1rem;">
-                <h3 style="font-weight: 600;">📅 Detalle de Ventas de Hoy</h3>
+                <h3 style="font-weight: 600;">📅 Detalle Ventas Hoy</h3>
             </div>
             <div style="max-height: 350px; overflow-y: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
@@ -87,7 +87,7 @@
         </div>
         {{-- Gráfico por horario --}}
         <div style="background-color: white; border: 2px solid #e5e7eb; border-radius: 0.75rem; padding: 1rem;" class="dark:bg-zinc-800 dark:border-zinc-600">
-            <h3 style="font-weight: 600; margin-bottom: 1rem; color: #374151;" class="dark:text-gray-200">Clientes por Horario (Hoy)</h3>
+            <h3 style="font-weight: 600; margin-bottom: 1rem; color: #374151;" class="dark:text-gray-200">Clientes por Horario</h3>
             <div style="position: relative; min-height: 280px;">
                 <canvas id="graficoHorario"></canvas>
             </div>

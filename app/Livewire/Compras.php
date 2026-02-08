@@ -86,7 +86,7 @@ class Compras extends Component
 
     public function agregarDetalle()
     {
-        if (
+        /*if (
             !$this->idprov ||
             !$this->idpro ||
             !$this->cantidaddet ||
@@ -100,7 +100,8 @@ class Compras extends Component
 
         if ($cantidad <= 0 || $costo <= 0) {
             return;
-        }
+        }*/
+        $this->validate();
         // VALIDAR QUE EL PROVEEDOR SEA EL MISMO
         if (count($this->detalles) > 0) {
             $proveedorActual = $this->detalles[0]['idprov'];
@@ -113,6 +114,8 @@ class Compras extends Component
         }
 
         $this->errorProveedor = null;
+        $cantidad = (float) $this->cantidaddet;
+        $costo    = (float) $this->costototal;
 
         $preciounitario = round($costo / $cantidad, 4);
 
@@ -247,4 +250,26 @@ class Compras extends Component
         ->paginate(5);
         return view('livewire.compras', compact('compras'));
     }
+    protected function rules()
+    {
+        return [
+            'idprov'        => 'required|exists:proveedores,idprov',
+            'idpro'         => 'required|exists:productos,idpro',
+            'cantidaddet'   => 'required|integer|min:1',
+            'costototal'    => 'required|numeric|min:0.0001',
+            'margen'        => 'required|numeric|min:0',
+        ];
+    }
+    protected $messages = [
+    'idprov.required'      => 'Debe seleccionar un proveedor.',
+    'idpro.required'       => 'Debe seleccionar un producto.',
+    'cantidaddet.required' => 'La cantidad es obligatoria.',
+    'cantidaddet.integer'  => 'La cantidad debe ser un número entero.',
+    'cantidaddet.min'      => 'La cantidad debe ser mayor a 0.',
+    'costototal.required'  => 'El costo total es obligatorio.',
+    'costototal.numeric'   => 'El costo total debe ser numérico.',
+    'costototal.min'       => 'El costo total debe ser mayor a 0.',
+    'margen.required'      => 'El margen es obligatorio.',
+    'margen.numeric'       => 'El margen debe ser numérico.'
+    ];
 }
