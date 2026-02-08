@@ -1,36 +1,40 @@
-FROM php:8.2-apache
+# =========================
+# Etapa 1: build frontend
+# =========================
+FROM node:18 AS nodebuilder
 
-# Dependencias del sistema
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+
+# =========================
+# Etapa 2: PHP runtime
+# =========================
+FROM php:8.2-cli
+
 RUN apt-get update && apt-get install -y \
     git \
-    curl \
+    unzip \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
     libzip-dev \
     libpq-dev \
     zip \
-    unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip pdo pdo_pgsql bcmath \
-    && apt-get clean \
+    && docker-php-ext-install pdo pdo_pgsql bcmath zip gd \
     && rm -rf /var/lib/apt/lists/*
 
-# Laravel necesita rewrite
-RUN a2enmod rewrite
+WORKDIR /app
 
-WORKDIR /var/www/html
-
+COPY --from=nodebuilder /app/public/build ./public/build
 COPY . .
 
-# Permisos Laravel
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
-
-# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
-EXPOSE 80
-CMD ["apache2-foreground"]
+RUN chmod -R 775 storage bootstrap/cache
+
+EXPOSE 8000
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 
