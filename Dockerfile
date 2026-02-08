@@ -30,7 +30,7 @@ RUN chown -R www-data:www-data /var/www/html \
 # Composer (oficial)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
 
 EXPOSE 80
 CMD ["apache2-foreground"]
