@@ -43,6 +43,9 @@
                             <option value="{{ $p->idprov }}">{{ $p->nombreprov }}</option>
                             @endforeach
                         </select>
+                        @error('idprov')
+                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="col-span-12 md:col-span-6">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Producto</label>
@@ -52,6 +55,9 @@
                             <option value="{{ $pro->idpro }}">{{ $pro->nombrepro }}</option>
                             @endforeach
                         </select>
+                        @error('idpro')
+                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
 
 
@@ -68,7 +74,10 @@
                             min="0"
                             wire:model="costototal"
                             class="w-full rounded-lg border border-gray-400 bg-white
-           focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"">
+           focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            @error('costototal')
+                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror  
                     </div>
 
 
@@ -79,7 +88,10 @@
                             min="1"
                             wire:model="cantidaddet"
                             class="w-full rounded-lg border border-gray-400 bg-white
-           focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"">
+           focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        @error('cantidaddet')
+                            <span class="text-red-600 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class=" col-span-12 md:col-span-4">
                         <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -91,7 +103,10 @@
                             step="0.01"
                             wire:model="margen"
                             class="w-full rounded-lg border border-gray-400 bg-white
-           focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"">
+           focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    @error('margen')
+                        <span class="text-red-600 text-sm">{{ $message }}</span>
+                    @enderror
                     </div>
 
                     <div class=" col-span-12">

@@ -159,7 +159,6 @@ class Productos extends Component
         }
 
         $producto->activopro = false;
-        $producto->stockpro  = 0;
         $producto->save();
     }
 

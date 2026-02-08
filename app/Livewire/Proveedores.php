@@ -30,22 +30,38 @@ class Proveedores extends Component
     {
         if ($this->idprov) {
             return [
-                'rucprov'       => 'required|unique:proveedores,rucprov,' . $this->idprov . ',idprov',
-                'nombreprov'    => 'required',
-                'correoprov'    => 'required|email',
-                'telefonoprov'  => 'required',
-                'direccionprov' => 'required',
+                'rucprov'       => 'required|digits:13|unique:proveedores,rucprov,' . $this->idprov . ',idprov',
+                'nombreprov'    => 'required|string|max:100',
+                'correoprov'    => 'required|email|max:100',
+                'telefonoprov'  => 'required|digits_between:7,10',
+                'direccionprov' => 'required|string|max:200',
             ];
         }
 
         return [
-            'rucprov'       => 'required|unique:proveedores,rucprov',
-            'nombreprov'    => 'required',
-            'correoprov'    => 'required|email',
-            'telefonoprov'  => 'required',
-            'direccionprov' => 'required',
+            'rucprov'       => 'required|digits:13|unique:proveedores,rucprov',
+            'nombreprov'    => 'required|string|max:100',
+            'correoprov'    => 'required|email|max:100',
+            'telefonoprov'  => 'required|digits_between:7,10',
+            'direccionprov' => 'required|string|max:200',
         ];
     }
+    protected $messages = [
+        'rucprov.required' => 'El RUC es obligatorio.',
+        'rucprov.digits'   => 'El RUC debe tener exactamente 13 números.',
+        'rucprov.unique'   => 'Este RUC ya está registrado.',
+
+        'nombreprov.required' => 'El nombre del proveedor es obligatorio.',
+
+        'correoprov.required' => 'El correo es obligatorio.',
+        'correoprov.email'    => 'El correo no es válido.',
+
+        'telefonoprov.required' => 'El teléfono es obligatorio.',
+        'telefonoprov.digits_between' =>
+            'El teléfono debe tener entre 7 y 10 números.',
+
+        'direccionprov.required' => 'La dirección es obligatoria.',
+    ];
 
     public function render()
     {
