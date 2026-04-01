@@ -74,7 +74,7 @@
                         @forelse($ventas as $venta)
                         <tr style="border-bottom: 1px solid #e5e7eb;">
                             <td style="padding: 0.5rem; font-size: 0.875rem; color: #374151;" class="dark:text-gray-200">{{ $venta['idven'] }}</td>
-                            <td style="padding: 0.5rem; font-size: 0.875rem; color: #374151;" class="dark:text-gray-200">{{ \Carbon\Carbon::parse($venta['fechaven'])->format('H:i') }}</td>
+                            <td style="padding: 0.5rem; font-size: 0.875rem; color: #374151;" class="dark:text-gray-200">{{ \Carbon\Carbon::parse($venta['fechaven'])->setTimezone('America/Guayaquil')->format('H:i') }}</td>
                             <td style="padding: 0.5rem; font-size: 0.875rem; color: #374151;" class="dark:text-gray-200">{{ Str::limit($venta['cliente']['nombre'] ?? 'C.F.', 20) }}</td>
                             <td style="padding: 0.5rem; font-size: 0.875rem; text-align: right; font-weight: 600; color: #16a34a;">${{ number_format($venta['totalven'], 2) }}</td>
                         </tr>
